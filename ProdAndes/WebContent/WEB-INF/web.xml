@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.5"
+ xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+ <display-name>N1_I1</display-name>
+ <servlet>
+  <display-name>ServletPlantilla</display-name>
+  <servlet-name>ServletPlantilla</servlet-name>
+  <servlet-class>co.edu.uniandes.N1_I1.servlets.ServletPlantilla</servlet-class>
+ </servlet>
+ <servlet>
+  <display-name>ServletConsultaGeneral</display-name>
+  <servlet-name>ServletConsultaGeneral</servlet-name>
+  <servlet-class>co.edu.uniandes.N1_I1.servlets.ServletConsultasGenerales</servlet-class>
+ </servlet>
+ <servlet>
+  <display-name>ServletUsuario</display-name>
+  <servlet-name>ServletUsuario</servlet-name>
+  <servlet-class>co.edu.uniandes.N1_I1.servlets.ServletUsuario</servlet-class>
+ </servlet>
+ <servlet>
+  <display-name>CopyOfConsultasGenerales2</display-name>
+  <servlet-name>CopyOfConsultasGenerales2</servlet-name>
+  <servlet-class>co.edu.uniandes.N1_I1.servlets.CopyOfConsultasGenerales2</servlet-class>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>ServletConsultaGeneral</servlet-name>
+  <url-pattern>/consultaGeneral.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletUsuario</servlet-name>
+  <url-pattern>/prueba.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>CopyOfConsultasGenerales2</servlet-name>
+  <url-pattern>/prueba2.html</url-pattern>
+ </servlet-mapping>
+ <welcome-file-list>
+  <welcome-file>/WEB-INF/index.htm</welcome-file>
+ </welcome-file-list>
+</web-app>
