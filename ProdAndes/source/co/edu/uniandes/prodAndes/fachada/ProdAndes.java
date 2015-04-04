@@ -280,10 +280,9 @@ public class ProdAndes
 			String selTipoId, String nombre, String nacionalidad,
 			String direccionElectronica, String ciudad, String departamento,
 			String direccionFisica, String telefno, String codPostal,
-			String nombrelegal, String id, String sinv, String tipoIdLegal) {
-		// TODO Auto-generated method stub
+			String nombrelegal, String id, String sinv, String tipoIdLegal) throws Exception {
+		dao.registrarUsuario(login, direccionElectronica, pass, idcli, selTipoId, ciudad, nacionalidad, departamento, direccionFisica, telefno, codPostal);
+		dao.registrarCliente(login, direccionElectronica, id, nombrelegal, sinv, tipoIdLegal);
 		
 	}
-
-	
 }
