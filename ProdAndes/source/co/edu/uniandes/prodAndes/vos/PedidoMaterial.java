@@ -1,4 +1,4 @@
-package co.edu.uniandes.N1_I1.vos;
+package co.edu.uniandes.prodAndes.vos;
 
 import java.sql.Date;
 

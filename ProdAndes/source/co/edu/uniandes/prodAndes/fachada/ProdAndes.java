@@ -1,15 +1,15 @@
-package co.edu.uniandes.N1_I1.fachada;
+package co.edu.uniandes.prodAndes.fachada;
 
 import java.util.ArrayList;
 
-import co.edu.uniandes.N1_I1.dao.ConsultaDAO;
-import co.edu.uniandes.N1_I1.vos.Administrador;
-import co.edu.uniandes.N1_I1.vos.Cliente;
-import co.edu.uniandes.N1_I1.vos.Material;
-import co.edu.uniandes.N1_I1.vos.Operario;
-import co.edu.uniandes.N1_I1.vos.Producto;
-import co.edu.uniandes.N1_I1.vos.Proveedor;
-import co.edu.uniandes.N1_I1.vos.Usuario;
+import co.edu.uniandes.prodAndes.dao.ConsultaDAO;
+import co.edu.uniandes.prodAndes.vos.Administrador;
+import co.edu.uniandes.prodAndes.vos.Cliente;
+import co.edu.uniandes.prodAndes.vos.Material;
+import co.edu.uniandes.prodAndes.vos.Operario;
+import co.edu.uniandes.prodAndes.vos.Producto;
+import co.edu.uniandes.prodAndes.vos.Proveedor;
+import co.edu.uniandes.prodAndes.vos.Usuario;
 
 /**
  * Clase VideoAndes, que representa la fachada de comunicación entre
@@ -27,8 +27,76 @@ public class ProdAndes
 	
 	private int tipoUsuario;
 	
-	private Usuario usuarioVal;
-	
+	/**
+	 * @return the tipoUsuario
+	 */
+	public int getTipoUsuario() {
+		return tipoUsuario;
+	}
+
+	/**
+	 * @param tipoUsuario the tipoUsuario to set
+	 */
+	public void setTipoUsuario(int tipoUsuario) {
+		this.tipoUsuario = tipoUsuario;
+	}
+
+	/**
+	 * @return the adminVal
+	 */
+	public Administrador getAdminVal() {
+		return adminVal;
+	}
+
+	/**
+	 * @param adminVal the adminVal to set
+	 */
+	public void setAdminVal(Administrador adminVal) {
+		this.adminVal = adminVal;
+	}
+
+	/**
+	 * @return the clienteVal
+	 */
+	public Cliente getClienteVal() {
+		return clienteVal;
+	}
+
+	/**
+	 * @param clienteVal the clienteVal to set
+	 */
+	public void setClienteVal(Cliente clienteVal) {
+		this.clienteVal = clienteVal;
+	}
+
+	/**
+	 * @return the proveedorVal
+	 */
+	public Proveedor getProveedorVal() {
+		return proveedorVal;
+	}
+
+	/**
+	 * @param proveedorVal the proveedorVal to set
+	 */
+	public void setProveedorVal(Proveedor proveedorVal) {
+		this.proveedorVal = proveedorVal;
+	}
+
+	/**
+	 * @return the operarioVal
+	 */
+	public Operario getOperarioVal() {
+		return operarioVal;
+	}
+
+	/**
+	 * @param operarioVal the operarioVal to set
+	 */
+	public void setOperarioVal(Operario operarioVal) {
+		this.operarioVal = operarioVal;
+	}
+
 	private Administrador adminVal;
 	
 	private Cliente clienteVal;
@@ -207,4 +275,15 @@ public class ProdAndes
 			return new ArrayList<Producto>();
 		}
 	}
+
+	public void registrarCliente(String login, String pass, String idcli,
+			String selTipoId, String nombre, String nacionalidad,
+			String direccionElectronica, String ciudad, String departamento,
+			String direccionFisica, String telefno, String codPostal,
+			String nombrelegal, String id, String sinv, String tipoIdLegal) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

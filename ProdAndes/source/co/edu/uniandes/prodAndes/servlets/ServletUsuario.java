@@ -1,9 +1,10 @@
-package co.edu.uniandes.N1_I1.servlets;
+package co.edu.uniandes.prodAndes.servlets;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.*;
 import java.text.*;
 import java.util.Iterator;
@@ -12,7 +13,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 
-public class ServletUsuario extends HttpServlet
+public class ServletUsuario extends ServletTemplate
 {
     // -----------------------------------------------------------------
     // Atributos
@@ -31,10 +32,6 @@ public class ServletUsuario extends HttpServlet
     /**
      * Inicialización del Servlet
      */
-    public void init( ) throws ServletException
-    {
-
-    }
 
     /**
      * Maneja un pedido GET de un cliente
@@ -485,4 +482,23 @@ public class ServletUsuario extends HttpServlet
         df.setMinimumFractionDigits( 2 );
         return df.format( valor );
     }
+
+	@Override
+	public String darTituloPagina(HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String darImagenTitulo(HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void escribirContenido(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
 }

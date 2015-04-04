@@ -4,27 +4,33 @@
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
  <display-name>N1_I1</display-name>
  <servlet>
-  <display-name>ServletPlantilla</display-name>
-  <servlet-name>ServletPlantilla</servlet-name>
-  <servlet-class>co.edu.uniandes.N1_I1.servlets.ServletPlantilla</servlet-class>
- </servlet>
- <servlet>
-  <display-name>ServletConsultaGeneral</display-name>
-  <servlet-name>ServletConsultaGeneral</servlet-name>
-  <servlet-class>co.edu.uniandes.N1_I1.servlets.ServletConsultasGenerales</servlet-class>
- </servlet>
- <servlet>
   <display-name>ServletUsuario</display-name>
   <servlet-name>ServletUsuario</servlet-name>
-  <servlet-class>co.edu.uniandes.N1_I1.servlets.ServletUsuario</servlet-class>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletUsuario</servlet-class>
  </servlet>
  <servlet>
   <display-name>CopyOfConsultasGenerales2</display-name>
-  <servlet-name>CopyOfConsultasGenerales2</servlet-name>
-  <servlet-class>co.edu.uniandes.N1_I1.servlets.CopyOfConsultasGenerales2</servlet-class>
+  <servlet-name>ServletConsultasGenerales</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletConsultasGenerales</servlet-class>
+ </servlet>
+ <servlet>
+  <servlet-name>ServletIndex</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletIndex</servlet-class>
+ </servlet>
+ <servlet>
+  <servlet-name>ServletRegistroEjec</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletRegistroEjec</servlet-class>
+ </servlet>
+ <servlet>
+  <servlet-name>ServletMenu</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletMenu</servlet-class>
+ </servlet>
+ <servlet>
+  <servlet-name>ServletRegistrarCliente</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletRegistroCliente</servlet-class>
  </servlet>
  <servlet-mapping>
-  <servlet-name>ServletConsultaGeneral</servlet-name>
+  <servlet-name>ServletConsultasGenerales</servlet-name>
   <url-pattern>/consultaGeneral.html</url-pattern>
  </servlet-mapping>
  <servlet-mapping>
@@ -32,10 +38,19 @@
   <url-pattern>/prueba.html</url-pattern>
  </servlet-mapping>
  <servlet-mapping>
-  <servlet-name>CopyOfConsultasGenerales2</servlet-name>
-  <url-pattern>/prueba2.html</url-pattern>
+  <servlet-name>ServletIndex</servlet-name>
+  <url-pattern>/index.html</url-pattern>
  </servlet-mapping>
- <welcome-file-list>
-  <welcome-file>/WEB-INF/index.htm</welcome-file>
- </welcome-file-list>
+ <servlet-mapping>
+  <servlet-name>ServletRegistroEjec</servlet-name>
+  <url-pattern>/registroEjec.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletMenu</servlet-name>
+  <url-pattern>menu.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletRegistrarCliente</servlet-name>
+  <url-pattern>registroCliente.html</url-pattern>
+ </servlet-mapping>
 </web-app>

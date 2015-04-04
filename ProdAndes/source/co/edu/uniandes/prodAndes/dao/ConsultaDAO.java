@@ -8,7 +8,7 @@
  * Autor: Juan Diego Toro - 1-Marzo-2010
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
-package co.edu.uniandes.N1_I1.dao;
+package co.edu.uniandes.prodAndes.dao;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,15 +17,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
-import co.edu.uniandes.N1_I1.vos.Administrador;
-import co.edu.uniandes.N1_I1.vos.Cliente;
-import co.edu.uniandes.N1_I1.vos.EtapaProduccion;
-import co.edu.uniandes.N1_I1.vos.Material;
-import co.edu.uniandes.N1_I1.vos.Operario;
-import co.edu.uniandes.N1_I1.vos.Pedido;
-import co.edu.uniandes.N1_I1.vos.PedidoMaterial;
-import co.edu.uniandes.N1_I1.vos.Producto;
-import co.edu.uniandes.N1_I1.vos.Proveedor;
+import co.edu.uniandes.prodAndes.vos.Administrador;
+import co.edu.uniandes.prodAndes.vos.Cliente;
+import co.edu.uniandes.prodAndes.vos.EtapaProduccion;
+import co.edu.uniandes.prodAndes.vos.Material;
+import co.edu.uniandes.prodAndes.vos.Operario;
+import co.edu.uniandes.prodAndes.vos.Pedido;
+import co.edu.uniandes.prodAndes.vos.PedidoMaterial;
+import co.edu.uniandes.prodAndes.vos.Producto;
+import co.edu.uniandes.prodAndes.vos.Proveedor;
 /**
  * Clase ConsultaDAO, encargada de hacer las consultas básicas para el cliente
  */
@@ -37,7 +37,7 @@ public class ConsultaDAO {
 	/**
 	 * ruta donde se encuentra el archivo de conexión.
 	 */
-	private static final String ARCHIVO_CONEXION = "conexion.properties";
+	private static final String ARCHIVO_CONEXION = "../WebContent/conexion.properties";
 
 	private static final String CONSULTA_PRODUCTO = "Producto";
 
@@ -93,20 +93,11 @@ public class ConsultaDAO {
 	{
 		try
 		{
-			File arch= new File(path+ARCHIVO_CONEXION);
-			Properties prop = new Properties();
-			FileInputStream in = new FileInputStream( arch );
-
-			prop.load( in );
-			in.close( );
-
-			cadenaConexion = prop.getProperty("url");	// El url, el usuario y passwd deben estar en un archivo de propiedades.
-			// url: "jdbc:oracle:thin:@chie.uniandes.edu.co:1521:chie10";
-			usuario = prop.getProperty("usuario");	// "s2501aXX";
-			clave = prop.getProperty("clave");	// "c2501XX";
-			final String driver = prop.getProperty("driver");
+	        cadenaConexion = "jdbc:oracle:thin:@prod.oracle.virtual.uniandes.edu.co:1531:prod";
+	        usuario = "ISIS2304051510";
+	        clave = "dmariafifth";
+	        final String driver = "oracle.jdbc.driver.OracleDriver";
 			Class.forName(driver);
-
 		}
 		catch(Exception e)
 		{
@@ -1219,6 +1210,11 @@ public class ConsultaDAO {
 		return new Object[]{material,etapasProduc,productos,pedidosMaterial};
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	public ArrayList<EtapaProduccion> seleccionarTodosLasEtapa() throws Exception{
 		PreparedStatement prepStmt = null;
 		ArrayList<EtapaProduccion> rta = new ArrayList<EtapaProduccion>();
@@ -1256,6 +1252,11 @@ public class ConsultaDAO {
 		return rta;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	 public ArrayList<Producto> darTodosProductosCodigoNombre() throws Exception
 	    {
 	    	PreparedStatement prepStmt = null;
@@ -1280,10 +1281,6 @@ public class ConsultaDAO {
 	    			
 	    			resp.add(producto);
 	    		}
-	    		
-
-	    		
-
 	    	} catch (SQLException e) {
 	    		e.printStackTrace();
 	    		System.out.println("metodo1");
@@ -1304,6 +1301,11 @@ public class ConsultaDAO {
 	    	return resp;
 	    }
 	 
+	 /**
+	  * 
+	  * @return
+	  * @throws Exception
+	  */
 	 public ArrayList<Material> darTodosMaterialesCodigoNombreTipo() throws Exception
 	    {
 	    	PreparedStatement prepStmt = null;
@@ -1329,10 +1331,6 @@ public class ConsultaDAO {
 	    			
 	    			resp.add(material);
 	    		}
-	    		
-
-	    		
-
 	    	} catch (SQLException e) {
 	    		e.printStackTrace();
 	    		System.out.println("metodo1");
@@ -1352,4 +1350,54 @@ public class ConsultaDAO {
 	    	}
 	    	return resp;
 	    }
+
+	public void registrarUsuario(String login, String direccionElectronica,
+			String pass, String idcli, String selTipoId, String ciudad,
+			String nacionalidad, String departamento, String direccionFisica,
+			String telefno, String codPostal) throws Exception {
+		// TODO Auto-generated method stub
+		PreparedStatement stament = null;
+		String insertQuery = "insert into usuario ('login','direccionelectronica','clave','documentoid','tipodocumento','nacionalidad','ciudad','departamento','direccionfisica','codigopostal','telefono') values ('"+login+"','"+direccionElectronica+"','"+pass+"','"+idcli+"','"+selTipoId+"','"+nacionalidad+"','"+ciudad+"','"+departamento+"','"+direccionFisica+"','"+codPostal+"','"+telefno+"');";
+		try{
+			establecerConexion(cadenaConexion, usuario, clave);
+			stament = conexion.prepareStatement(insertQuery);
+			stament.executeUpdate();
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw new Exception("Este usuario ya existe, o alguno de sus valores es invalido.");
+		}finally{
+			if (stament != null){
+				try {
+					stament.close();
+				} catch (Exception e2) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+	}
+
+	public void registrarCliente(String login, String direccionElectronica,
+			String id, String nombrelegal, String sinv, String tipoIdLegal) throws Exception {
+		// TODO Auto-generated method stub
+		PreparedStatement stament = null;
+		String insertQuery = "insert into cliente ('login','direccionelectronica','nombrelegal','idlegal', 'tipoidlegal','registrosinv','codigo') values ('"+login+"','"+direccionElectronica+"','"+nombrelegal+"','"+id+"','"+tipoIdLegal+"','"+sinv+"');";
+		try{
+			establecerConexion(cadenaConexion, usuario, clave);
+			stament = conexion.prepareStatement(insertQuery);
+			stament.executeUpdate();
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw new Exception("Este usuario ya existe, o alguno de sus valores es invalido.");
+		}finally{
+			if (stament != null){
+				try {
+					stament.close();
+				} catch (Exception e2) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+	}
 }

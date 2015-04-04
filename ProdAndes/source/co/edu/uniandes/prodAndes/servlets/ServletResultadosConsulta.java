@@ -8,7 +8,7 @@
  * Autor: Juan Diego Toro - 1-Marzo-2010
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
-package co.edu.uniandes.N1_I1.servlets;
+package co.edu.uniandes.prodAndes.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,9 +19,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import co.edu.uniandes.N1_I1.fachada.ProdAndes;
-import co.edu.uniandes.N1_I1.vos.Material;
-import co.edu.uniandes.N1_I1.vos.Producto;
+import co.edu.uniandes.prodAndes.fachada.ProdAndes;
+import co.edu.uniandes.prodAndes.vos.Material;
+import co.edu.uniandes.prodAndes.vos.Producto;
 
 
 /**
