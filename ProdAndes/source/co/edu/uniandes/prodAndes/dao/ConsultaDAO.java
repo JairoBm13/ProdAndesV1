@@ -48,7 +48,13 @@ public class ConsultaDAO {
 	public static final String TIPO_MATERIAL_MATERIA_PRIMA = "Materia Prima";
 	
 	public static final String TIPO_MATERIAL_COMPONENTE = "Componente";
+	
+	public static final String PEDIDO_ESTADO_LISTO = "listo";
+	
+	public static final String PEDIDO_ESTADO_EN_PRODUCCION = "enProduccion";
 
+	public static final String PEDIDO_ESTADO_EN_ESPERA = "enEspera";
+	
 	//----------------------------------------------------
 	//Atributos
 	//----------------------------------------------------
@@ -233,10 +239,10 @@ public class ConsultaDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList consultarExistenciaDe(String tipo, String inventario, String etapa, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception{
+	public ArrayList consultarExistenciaDe(String tipo, String inventario, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception{
 		ArrayList resultado = new ArrayList();
 		if(tipo.equals("Producto")){
-			resultado = consultarExistenciasDeProducto(inventario, etapa, fechaEntrega, fechaSolicitud, ordenes, grupos);
+			resultado = consultarExistenciasDeProducto(inventario, fechaEntrega, fechaSolicitud, ordenes, grupos);
 		}
 		else if(tipo.equals("Materia Prima")){
 			resultado = consultarExistenciasDeMateriaPrima(tipo, inventario, ordenes, grupos);
@@ -262,7 +268,7 @@ public class ConsultaDAO {
 		ArrayList<Material> materiales = new ArrayList<Material>();
 
 		String selectingQuery = "Select cantidad, nombre, unidad from Materiales where tipo='"+tipo+"' ";
-		if(inventario != null){selectingQuery += "AND cantidad between ";
+		if(inventario != null){selectingQuery += " AND cantidad between ";
 		String[] inven = inventario.split("-");
 		selectingQuery += inven[0] + " AND " + inven[1];
 		}
@@ -278,7 +284,7 @@ public class ConsultaDAO {
 			}
 		}
 		if(!agrupamiento.isEmpty()){
-			selectingQuery += "group by "+agrupamiento;
+			selectingQuery += " group by "+agrupamiento+" ";
 		}
 		Iterator<String> iteraOrdenes= ordenes.iterator();
 		String ordenamiento = "";
@@ -292,7 +298,7 @@ public class ConsultaDAO {
 			}
 		}
 		if(!ordenamiento.isEmpty()){
-			selectingQuery += "order by "+ordenamiento;
+			selectingQuery += " order by "+ordenamiento+" ";
 		}
 
 		try {
@@ -353,7 +359,7 @@ public class ConsultaDAO {
 		Iterator<String> iteraGrupos = grupos.iterator();
 		String agrupamiento = "";
 
-		if(inventario != null){selectingQuery += "AND cantidad between ";
+		if(inventario != null){selectingQuery += " AND cantidad between ";
 		String[] inven = inventario.split("-");
 		selectingQuery += inven[0] + " AND " + inven[1];
 		}
@@ -367,7 +373,7 @@ public class ConsultaDAO {
 			}
 		}
 		if(!agrupamiento.isEmpty()){
-			selectingQuery += "group by "+agrupamiento;
+			selectingQuery += " group by "+agrupamiento+" ";
 		}
 		Iterator<String> iteraOrdenes= ordenes.iterator();
 		String ordenamiento = "";
@@ -381,7 +387,7 @@ public class ConsultaDAO {
 			}
 		}
 		if(!ordenamiento.isEmpty()){
-			selectingQuery += "order by "+ordenamiento;
+			selectingQuery += " order by "+ordenamiento+" ";
 		}
 
 		try {
@@ -433,19 +439,18 @@ public class ConsultaDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	private ArrayList<Producto> consultarExistenciasDeProducto(String inventario, String etapa, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception {
+	private ArrayList<Producto> consultarExistenciasDeProducto(String inventario, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception {
 		PreparedStatement statement = null;
 		ArrayList<Producto> productos = new ArrayList<Producto>();
-		String selectingQuery = "Select cantidad, nombre from PRODUCTO";
+		String selectingQuery = "Select cantidad, nombre from PRODUCTO ";
 		Iterator<String> iteraGrupos = grupos.iterator();
 		String agrupamiento = "";
-		if(inventario != null){selectingQuery += "AND cantidad between ";
+		if(inventario != null){selectingQuery += " AND cantidad between ";
 		String[] inven = inventario.split("-");
 		selectingQuery += inven[0] + " AND " + inven[1];
 		}
-		if(etapa != null){selectingQuery += "AND etapa='"+etapa+"'";}
-		if(fechaEntrega != null){selectingQuery += "AND fechaEntrega='"+fechaEntrega+"'";}
-		if(fechaSolicitud != null){selectingQuery += "AND fechaSolicitud='"+fechaSolicitud+"'";}
+		if(fechaEntrega != null){selectingQuery += " AND fechaEntrega='"+fechaEntrega+"' ";}
+		if(fechaSolicitud != null){selectingQuery += " AND fechaSolicitud='"+fechaSolicitud+"' ";}
 		while(iteraGrupos.hasNext()){
 			String grupo = iteraGrupos.next();
 			if (iteraGrupos.hasNext()) {
@@ -456,7 +461,7 @@ public class ConsultaDAO {
 			}
 		}
 		if(!agrupamiento.isEmpty()){
-			selectingQuery += "group by "+agrupamiento;
+			selectingQuery += "group by "+agrupamiento+" ";
 		}
 		Iterator<String> iteraOrdenes= ordenes.iterator();
 		String ordenamiento = "";
@@ -470,7 +475,7 @@ public class ConsultaDAO {
 			}
 		}
 		if(!ordenamiento.isEmpty()){
-			selectingQuery += "order by "+ordenamiento;
+			selectingQuery += "order by "+ordenamiento+" ";
 		}
 
 		try {
@@ -746,7 +751,7 @@ public class ConsultaDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean registrarPedidoProducto(Long idProceso, String loginCLiente, int cantidad, Date fechaEspera) throws Exception
+	public boolean registrarPedidoProducto(Long idProducto, String loginCLiente, int cantidad, Date fechaEspera) throws Exception
 	{
 
 		boolean fallo = false; 
@@ -760,7 +765,7 @@ public class ConsultaDAO {
 			//Rectifica si hay cantidad suficiente
 
 
-			PreparedStatement  prcantidadDisponible = conexion.prepareStatement("SELECT cantidad from Producto where Proceso.codigoProducto="+idProceso+" and etapa=0");
+			PreparedStatement  prcantidadDisponible = conexion.prepareStatement("SELECT cantidad from Producto where Producto.codigo="+idProducto);
 			ResultSet rscantidadDisponible = prcantidadDisponible.executeQuery();
 			prcantidadDisponible.close();
 
@@ -770,18 +775,14 @@ public class ConsultaDAO {
 
 			if(cantidadDisponible>=cantidad)
 			{
-				//crea y despacha el pedido
-
-				pSRequeridosNum = conexion.prepareStatement("select producto.codigo where ");
+				//actualiza cantidad disponeble
 				
 				int nuevo = cantidadDisponible-cantidad;			
-				PreparedStatement  psaactualizarDisponibles1 = conexion.prepareStatement("update Productos set cantidad="+nuevo+" where Proceso.codigoProducto="+idProceso+" and etapa=0");
-				PreparedStatement  psaactualizarDisponibles2 = conexion.prepareStatement("update Productos set cantidad=cantidad+"+cantidad+" where Proceso.codigoProducto="+idProceso+" and etapa=-1");
+				PreparedStatement  psaactualizarDisponibles1 = conexion.prepareStatement("update Productos set cantidad="+nuevo+" where Proceso.codigoProducto="+idProducto);
 				psaactualizarDisponibles1.executeUpdate();
-				psaactualizarDisponibles2.executeUpdate();
 				psaactualizarDisponibles1.close();
-				psaactualizarDisponibles2.close();
-
+				
+				
 				//Codigo del admin y crea pedido
 				pSRequeridosNum = conexion.prepareStatement("select codigo from Administrador");
 				ResultSet admin = pSRequeridosNum.executeQuery();
@@ -790,7 +791,7 @@ public class ConsultaDAO {
 					adminID=admin.getInt("codigo");
 
 				pSRequeridosNum =conexion.prepareStatement("insert into Pedidos (codigo, estado,cantidad,fechaPedido, fechaEsperada,  codioProducto ,  codigoAdmin, codigoCliente)"
-						+ "values (incremento_id_Pedido.NextVal,'listo',"+cantidad+", NOW(),"+fechaEspera+","+idProceso+","+adminID+",'"+loginCLiente+"' )");
+						+ "values (incremento_id_Pedido.NextVal,'"+PEDIDO_ESTADO_LISTO+"',"+cantidad+", NOW(),"+fechaEspera+","+idProducto+","+adminID+",'"+loginCLiente+"' )");
 				pSRequeridosNum.executeUpdate();
 
 			}
@@ -803,7 +804,7 @@ public class ConsultaDAO {
 
 
 				pSRequeridosNum =conexion.prepareStatement("Create View consulta as (SELECT * FROM PROCESO, ETAPA, ETAPAPRODUCCION, ESTACIONPRODUCCION, REQUIERE "
-						+ "where Proceso.codigoProducto="+idProceso+" and etapa.codigoProceso=proceso.codigo and etapa.codigoEtapa=etapaProduccion.codigo "
+						+ "where Proceso.codigoProducto="+idProducto+" and etapa.codigoProceso=proceso.codigo and etapa.codigoEtapa=etapaProduccion.codigo "
 						+ " and etapaProduccion.codigo=estacionProduccion.codigoEtapa and requiere.codigoEstacion=estacionProduccion.codigo) ");
 				pSRequeridosNum.executeUpdate();
 
@@ -835,12 +836,12 @@ public class ConsultaDAO {
 				{
 					//Actualiza los productos si se puede fabricar
 
-					PreparedStatement  psaactualizarDisponibles1 = conexion.prepareStatement("update Productos set cantidad="+0+" where Proceso.codigoProducto="+idProceso+" and etapa=0");
-					PreparedStatement  psaactualizarDisponibles2 = conexion.prepareStatement("update Productos set cantidad=cantidad+"+cantidadDisponible+" where Proceso.codigoProducto="+idProceso+" and etapa=-1");
+					PreparedStatement  psaactualizarDisponibles1 = conexion.prepareStatement("update Productos set cantidad="+0+" where Producto.Codigo="+idProducto);
+					
 					psaactualizarDisponibles1.executeUpdate();
-					psaactualizarDisponibles2.executeUpdate();
+					
 					psaactualizarDisponibles1.close();
-					psaactualizarDisponibles2.close();
+					
 
 					pSRequeridosNum.close();
 					pSRequeridosNum = conexion.prepareStatement("select * from matDisp");
@@ -867,7 +868,7 @@ public class ConsultaDAO {
 						adminID=admin.getInt("codigo");
 
 					pSRequeridosNum = conexion.prepareStatement("insert into Pedidos (codigo, estado,cantidad,fechaPedido, fechaEsperada,  codioProducto ,  codigoAdmin, codigoCliente)"
-							+ "values (incremento_id_Pedido.NextVal,'enProduccion',"+cantidad+", NOW(),"+fechaEspera+","+idProceso+","+adminID+",'"+loginCLiente+"' )");
+							+ "values (incremento_id_Pedido.NextVal,'"+PEDIDO_ESTADO_EN_PRODUCCION+"',"+cantidad+", NOW(),"+fechaEspera+","+idProducto+","+adminID+",'"+loginCLiente+"' )");
 					pSRequeridosNum.executeUpdate();
 
 
@@ -884,7 +885,7 @@ public class ConsultaDAO {
 						adminID=admin.getInt("codigo");
 
 					pSRequeridosNum = conexion.prepareStatement("insert into Pedidos (codigo, estado,cantidad,fechaPedido, fechaEsperada,  codioProducto ,  codigoAdmin, codigoCliente)"
-							+ "values (incremento_id_Pedido.NextVal,'enEspera',"+cantidad+", NOW(),"+fechaEspera+","+idProceso+","+adminID+",'"+loginCLiente+"' )");
+							+ "values (incremento_id_Pedido.NextVal,'"+PEDIDO_ESTADO_EN_ESPERA+"',"+cantidad+", NOW(),"+fechaEspera+","+idProducto+","+adminID+",'"+loginCLiente+"' )");
 					pSRequeridosNum.executeUpdate();
 
 
@@ -961,10 +962,10 @@ public class ConsultaDAO {
 			establecerConexion(cadenaConexion, usuario, clave);
 
 
-			String sentencia ="SELECT * from Producto where Producto.codigo="+idProducto+" and etapa=0";
+			String sentencia ="SELECT * from Producto where Producto.codigo="+idProducto;
 
 			if(costo!=null)
-				sentencia = sentencia + " and costo between "+costo[0]+" and "+costo[1];
+				sentencia = sentencia + " and costo between "+costo[0]+" and "+costo[1]+" ";
 
 			Iterator<String> iteraGrupos = grupos.iterator();
 			String agrupamiento = "";
@@ -978,7 +979,7 @@ public class ConsultaDAO {
 				}
 			}
 			if(!agrupamiento.isEmpty()){
-				sentencia += "group by "+agrupamiento;
+				sentencia += " group by "+agrupamiento+" ";
 			}
 			Iterator<String> iteraOrdenes= ordenes.iterator();
 			String ordenamiento = "";
@@ -992,7 +993,7 @@ public class ConsultaDAO {
 				}
 			}
 			if(!ordenamiento.isEmpty()){
-				sentencia += "order by "+ordenamiento;
+				sentencia += " order by "+ordenamiento+" ";
 			}
 
 
@@ -1000,15 +1001,17 @@ public class ConsultaDAO {
 
 			ResultSet rsProducto = prepStmt.executeQuery();
 
-			prepStmt = conexion.prepareStatement("SELECT * from Producto where Producto.codigo="+idProducto+" and etapa=-1");
+			prepStmt = conexion.prepareStatement("select sum(cantidadproducto) as cantidadEnProduccion form etapaProduccion where codigoProducto="+idProducto);
 
 			ResultSet rsProducto1 = prepStmt.executeQuery();
 
 
 			while(rsProducto.next())
 			{
-				rsProducto1.next();
-				producto = new Producto(rsProducto.getLong("codigo"), rsProducto.getString("nombre"), rsProducto.getInt("cantidad"), rsProducto1.getInt("cantidad"), rsProducto.getString("descripcion"), rsProducto.getDouble("costo"), rsProducto.getInt("estado"), rsProducto.getInt("numEtapas"));
+				if(rsProducto1.next())
+					producto = new Producto(rsProducto.getLong("codigo"), rsProducto.getString("nombre"), rsProducto.getInt("cantidad"), rsProducto1.getInt("cantidadEnProduccion"), rsProducto.getString("descripcion"), rsProducto.getDouble("costo"), rsProducto.getInt("numEtapas"));
+				else
+					producto = new Producto(rsProducto.getLong("codigo"), rsProducto.getString("nombre"), rsProducto.getInt("cantidad"), 0, rsProducto.getString("descripcion"), rsProducto.getDouble("costo"), rsProducto.getInt("numEtapas"));
 
 
 			}
@@ -1159,14 +1162,14 @@ public class ConsultaDAO {
 				etapasProduc.add(new EtapaProduccion(rsEtapaProd.getLong("etaProd.codigo"), rsEtapaProd.getInt("etaProd.etapa"), rsEtapaProd.getString("etaProd.nombre"), rsEtapaProd.getDate("etaProd.fechaInicio"), rsEtapaProd.getDate("etaProd.fechaFin"), rsEtapaProd.getLong("etaProd.tiempoEjecucion"), rsEtapaProd.getString("etaProd.descripcion")));
 
 				prepStmt = conexion.prepareStatement("SELECT * etapaProduccion ep inner join producto pr "
-						+ "on pr.codigo=ep.codigoProducto and pr.codigo="+rsEtapaProd.getLong("etaProd.codigo")+" and etapa=0");
+						+ "on pr.codigo=ep.codigoProducto and pr.codigo="+rsEtapaProd.getLong("etaProd.codigo"));
 
 
 				ResultSet rsProductos = prepStmt.executeQuery();
 
 				while(rsProductos.next())
 				{
-					productos.add(new Producto(rsProductos.getLong("pr.codigo"), rsProductos.getString("pr.nombre"), rsProductos.getInt("pr.cantidad"), 0, rsProductos.getString("pr.descripcion"), rsProductos.getDouble("pr.costo"), rsProductos.getInt("pr.estado"), rsProductos.getInt("pr.numEtapas")));
+					productos.add(new Producto(rsProductos.getLong("pr.codigo"), rsProductos.getString("pr.nombre"), rsProductos.getInt("pr.cantidad"), 0, rsProductos.getString("pr.descripcion"), rsProductos.getDouble("pr.costo"), rsProductos.getInt("pr.numEtapas")));
 
 
 				}
@@ -1218,7 +1221,7 @@ public class ConsultaDAO {
 		ArrayList<EtapaProduccion> rta = new ArrayList<EtapaProduccion>();
 		try {
 			establecerConexion(cadenaConexion, usuario, clave);
-			String selectQuery = "select * from etapaproduccion;";
+			String selectQuery = "select * from etapaproduccion";
 			prepStmt = conexion.prepareStatement(selectQuery);
 			ResultSet rs = prepStmt.executeQuery();
 
@@ -1263,7 +1266,7 @@ public class ConsultaDAO {
 	    	try {
 	    		establecerConexion(cadenaConexion, usuario, clave);
 	    		
-	    		String sentencia = "SELECT codigo, nombre from Producto where etapa=0";
+	    		String sentencia = "SELECT codigo, nombre from Producto";
 	    		
 	    		
 	    		prepStmt = conexion.prepareStatement(sentencia);
