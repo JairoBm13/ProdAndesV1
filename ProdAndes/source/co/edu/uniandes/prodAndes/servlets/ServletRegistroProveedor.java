@@ -6,15 +6,16 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ServletRegistrarOperario extends ServletTemplate{
+public class ServletRegistroProveedor extends ServletTemplate{
 
 	@Override
 	public String darTituloPagina(HttpServletRequest request) {
-		return "Registro de operario | ProdAndes";
+		return "Registro proveedor | ProdAndes";
 	}
 
 	@Override
 	public String darImagenTitulo(HttpServletRequest request) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -185,10 +186,12 @@ public class ServletRegistrarOperario extends ServletTemplate{
 				String telefno = request.getParameter("telefono");
 				String codPostal = request.getParameter("codPostal");
 
-				String nombreo = request.getParameter("nombre");
-				String cargo = request.getParameter("selcargo");
+				String nombrelegal = request.getParameter("nombreLegal");
+				String id = request.getParameter("idLegal");
+				String sinv = request.getParameter("sinv");
+				String tipoIdLegal = request.getParameter("selTipoIdLegal");
 				try {
-					fachada.registrarOperario(login,pass,idcli,selTipoId,nombre,nacionalidad,direccionElectronica,ciudad,departamento,direccionFisica,telefno,codPostal,nombreo, cargo);
+					fachada.registrarCliente(login,pass,idcli,selTipoId,nombre,nacionalidad,direccionElectronica,ciudad,departamento,direccionFisica,telefno,codPostal,nombrelegal,id,sinv,tipoIdLegal);
 					respuesta.println("<!-- Start Page Banner -->");
 					respuesta.println("		<div class=\"page-banner\" style=\"padding:40px 0; background: url(images/slide-02-bg.jpg) center #f9f9f9;\">");
 					respuesta.println("			<div class=\"container\">");

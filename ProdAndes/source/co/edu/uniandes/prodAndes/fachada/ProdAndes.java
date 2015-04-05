@@ -285,4 +285,13 @@ public class ProdAndes
 		dao.registrarCliente(login, direccionElectronica, id, nombrelegal, sinv, tipoIdLegal);
 		
 	}
+
+	public void registrarOperario(String login, String pass, String idcli,
+			String selTipoId, String nombre, String nacionalidad,
+			String direccionElectronica, String ciudad, String departamento,
+			String direccionFisica, String telefno, String codPostal,
+			String nombreo, String cargo) throws Exception {
+		dao.registrarUsuario(login, direccionElectronica, pass, idcli, selTipoId, ciudad, nacionalidad, departamento, direccionFisica, telefno, codPostal);
+		dao.registrarOperario(login, direccionElectronica, cargo, nombre);
+	}
 }

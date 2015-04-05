@@ -1375,11 +1375,31 @@ public class ConsultaDAO {
 		}
 	}
 
-	public void registrarCliente(String login, String direccionElectronica,
-			String id, String nombrelegal, String sinv, String tipoIdLegal) throws Exception {
-		// TODO Auto-generated method stub
+	public void registrarCliente(String login, String direccionElectronica, String id, String nombrelegal, String sinv, String tipoIdLegal) throws Exception {
 		PreparedStatement stament = null;
 		String insertQuery = "insert into cliente ('login','direccionelectronica','nombrelegal','idlegal', 'tipoidlegal','registrosinv','codigo') values ('"+login+"','"+direccionElectronica+"','"+nombrelegal+"','"+id+"','"+tipoIdLegal+"','"+sinv+"')";
+		try{
+			establecerConexion(cadenaConexion, usuario, clave);
+			stament = conexion.prepareStatement(insertQuery);
+			stament.executeUpdate();
+		}catch(SQLException e){
+			e.printStackTrace();
+			throw new Exception("Este usuario ya existe, o alguno de sus valores es invalido.");
+		}finally{
+			if (stament != null){
+				try {
+					stament.close();
+				} catch (Exception e2) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+	}
+
+	public void registrarOperario(String login, String direccionElectronica, String cargo, String nombre) throws Exception {
+		PreparedStatement stament = null;
+		String insertQuery = "insert into operario ('login','direccionElectronica','nombre','cargo', codigo) values ('"+login+"','"+direccionElectronica+"','"+nombre+"','"+cargo+"',incremento_id_operario.NextVal) ";
 		try{
 			establecerConexion(cadenaConexion, usuario, clave);
 			stament = conexion.prepareStatement(insertQuery);
