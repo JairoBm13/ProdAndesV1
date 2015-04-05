@@ -163,7 +163,7 @@ public class ProdAndes
     	try {
 			usuario = dao.inicioSesion(usu, correo, contrasenia);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
     	
     	if(usuario==null) return false;

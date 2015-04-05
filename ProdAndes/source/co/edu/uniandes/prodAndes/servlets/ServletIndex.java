@@ -35,7 +35,7 @@ public class ServletIndex extends ServletTemplate {
 			HttpServletResponse response) throws IOException {
 		
 		PrintWriter respuesta = response.getWriter( );
-		respuesta.println("<P>ola</p>");
+		respuesta.println("<P><a href=\"login.html\">login</p>");
 
 	}
 

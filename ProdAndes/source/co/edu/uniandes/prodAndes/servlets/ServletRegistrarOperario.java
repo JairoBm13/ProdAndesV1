@@ -6,11 +6,11 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ServletRegistroCliente extends ServletTemplate{
+public class ServletRegistrarOperario extends ServletTemplate{
 
 	@Override
 	public String darTituloPagina(HttpServletRequest request) {
-		return "ProdAndes | Registro de cliente";
+		return "Registro de operario | ProdAndes";
 	}
 
 	@Override
@@ -294,7 +294,6 @@ public class ServletRegistroCliente extends ServletTemplate{
 			respuesta.println("			</div>");
 			respuesta.println("		</div>");
 			respuesta.println("		<!-- End Content -->");
-
 		}
 		else{
 			respuesta.println("<!-- Start Content -->");
@@ -306,7 +305,7 @@ public class ServletRegistroCliente extends ServletTemplate{
 			respuesta.println("					<div class=\"error-page\">");
 			respuesta.println("						<h1>403</h1>");
 			respuesta.println("						<h3>Hubo un problema</h3>");
-			respuesta.println("						<p>No tienes los permisos para realizar esta acci&oacute;n</p>");
+			respuesta.println("						<p>No tienes los permisos para realizar esta acci&oacute;nr</p>");
 			respuesta.println("						<div class=\"text-center\"><a href=\"menu.html\" class=\"btn-system btn-small\">A inicio</a></div>");
 			respuesta.println("					</div>");
 			respuesta.println("					");
@@ -317,4 +316,5 @@ public class ServletRegistroCliente extends ServletTemplate{
 			respuesta.println("		<!-- End Content -->");
 		}
 	}
+
 }

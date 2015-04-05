@@ -566,14 +566,14 @@ public class ConsultaDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public Object inicioSesion(String usuario, String correo, String pass) throws Exception{
+	public Object inicioSesion(String usuarion, String correo, String pass) throws Exception{
 		Object usuarioIniciado = null;
 		PreparedStatement statement = null;
 		String selectQueryUsuario = "select * from USUARIO";
 
-		if(!usuario.isEmpty()){ selectQueryUsuario+=" where login='"+usuario+"'";}
-		else if(!correo.isEmpty()){ selectQueryUsuario+=" where direccionElectronica='"+correo+"'";}
-		selectQueryUsuario+=";";
+		if(!usuarion.isEmpty()){ selectQueryUsuario+=" where login='"+usuarion+"'";}
+		else if(correo!=null){ selectQueryUsuario+=" where direccionElectronica='"+correo+"'";}
+		selectQueryUsuario+="";
 		try{
 			establecerConexion(cadenaConexion, usuario, clave);
 			statement = conexion.prepareStatement(selectQueryUsuario);
@@ -591,9 +591,8 @@ public class ConsultaDAO {
 				int tipoDocumento = rs.getInt("tipoDocumento");
 
 				String selectQueryAdmin = "select * from administrador";
-				if(!usuario.isEmpty()){ selectQueryAdmin+=" where login='"+usuario+"'";}
+				if(!usuarion.isEmpty()){ selectQueryAdmin+=" where login='"+usuarion+"'";}
 				else if(!correo.isEmpty()){ selectQueryAdmin+=" where direccionElectronica='"+correo+"'";}
-				selectQueryAdmin+=";";
 				statement = conexion.prepareStatement(selectQueryAdmin);
 				ResultSet rsAdmin = statement.executeQuery();
 
@@ -618,9 +617,8 @@ public class ConsultaDAO {
 				}
 				else{
 					String selectQueryCliente = "select * from cliente";
-					if(!usuario.isEmpty()){ selectQueryCliente+=" where login='"+usuario+"'";}
+					if(!usuarion.isEmpty()){ selectQueryCliente+=" where login='"+usuarion+"'";}
 					else if(!correo.isEmpty()){ selectQueryCliente+=" where direccionElectronica='"+correo+"'";}
-					selectQueryCliente+=";";
 					statement = conexion.prepareStatement(selectQueryCliente);
 					ResultSet rsCliente = statement.executeQuery();
 
@@ -651,9 +649,8 @@ public class ConsultaDAO {
 					}
 					else{
 						String selectQueryProveedor = "select * from proveedor";
-						if(!usuario.isEmpty()){ selectQueryProveedor+=" where login='"+usuario+"'";}
+						if(!usuarion.isEmpty()){ selectQueryProveedor+=" where login='"+usuarion+"'";}
 						else if(!correo.isEmpty()){ selectQueryProveedor+=" where direccionElectronica='"+correo+"'";}
-						selectQueryProveedor+=";";
 						statement = conexion.prepareStatement(selectQueryProveedor);
 						ResultSet rsProvee = statement.executeQuery();
 
@@ -684,9 +681,8 @@ public class ConsultaDAO {
 						}
 						else{
 							String selectQueryOperario = "select * from operario";
-							if(!usuario.isEmpty()){ selectQueryOperario+=" where login='"+usuario+"'";}
+							if(!usuarion.isEmpty()){ selectQueryOperario+=" where login='"+usuarion+"'";}
 							else if(!correo.isEmpty()){ selectQueryOperario+=" where direccionElectronica='"+correo+"'";}
-							selectQueryOperario+=";";
 							statement = conexion.prepareStatement(selectQueryOperario);
 							ResultSet rsOp = statement.executeQuery();
 

@@ -29,6 +29,10 @@
   <servlet-name>ServletRegistrarCliente</servlet-name>
   <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletRegistroCliente</servlet-class>
  </servlet>
+ <servlet>
+  <servlet-name>ServletLogin</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletLogin</servlet-class>
+ </servlet>
  <servlet-mapping>
   <servlet-name>ServletConsultasGenerales</servlet-name>
   <url-pattern>/consultaGeneral.html</url-pattern>
@@ -52,5 +56,9 @@
  <servlet-mapping>
   <servlet-name>ServletRegistrarCliente</servlet-name>
   <url-pattern>/registroCliente.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletLogin</servlet-name>
+  <url-pattern>/login.html</url-pattern>
  </servlet-mapping>
 </web-app>

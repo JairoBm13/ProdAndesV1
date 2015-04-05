@@ -69,7 +69,7 @@ public class ServletMenu extends ServletTemplate{
 			respuesta.println("                                    <li><a href=\"registroOperario.html\">Registrar un operario</a></li>");
 			respuesta.println("                                    <li><a href=\"registroUsuario.html\">Registrar un usuario</a></li>");
 		}
-		else if(fachada.getTipoUsuario()==4 && fachada.getOperarioVal().getCargo().equals("Gerente")){
+		else if(fachada.getTipoUsuario()==4 && fachada.getOperarioVal().getCargo().equals("Gerente") || fachada.getTipoUsuario()==1){
 			respuesta.println("                                    <li><a href=\"registrarMateria.html\">Registrar materia prima</a></li>");
 			respuesta.println("                                    <li><a href=\"registroComponente.html\">Registrar componente</a></li>");
 			respuesta.println("                                    <li><a href=\"registrarEstacion.html\">Registrar una estación de producci&oacute;n</a></li>");
@@ -80,10 +80,10 @@ public class ServletMenu extends ServletTemplate{
 			respuesta.println("                                    <li><a href=\"registrarPedidoMaterial\">Registrar pedido material</a></li>");
 
 		}
-		else if(fachada.getTipoUsuario()==4 && !fachada.getOperarioVal().getCargo().equals("Gerente")){
+		else if(fachada.getTipoUsuario()==4 && !fachada.getOperarioVal().getCargo().equals("Gerente") || fachada.getTipoUsuario()==1){
 			respuesta.println("                                    <li><a href=\"registarEjecucion.html\">Registrar ejecuci&oacute;n de etapa</a></li>");
 		}
-		else if(fachada.getTipoUsuario()==3){
+		else if(fachada.getTipoUsuario()==3 || fachada.getTipoUsuario()==1){
 			respuesta.println("                                    <li><a href=\"registrarPedidoProducto.html\">Registrar pedido material</a></li>");
 			respuesta.println("                                    <li><a href=\"cancelarPedido\">Cancelar pedido</a></li>");
 		}
