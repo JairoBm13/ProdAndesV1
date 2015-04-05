@@ -154,7 +154,7 @@ public class ConsultaDAO {
 		PreparedStatement statement = null;		
 
 		try {
-			String selectQuery = "select cantidad from producto where estado="+etapa+"codigo="+codigo+";";
+			String selectQuery = "select cantidad from producto where estado="+etapa+"codigo="+codigo;
 			establecerConexion(cadenaConexion, usuario, clave);
 			statement = conexion.prepareStatement(selectQuery);
 
@@ -162,10 +162,10 @@ public class ConsultaDAO {
 			int cantidad;
 			rs.next();
 			cantidad = rs.getInt("cantidad");
-			String updateIncQuery = "update producto set cantidad=cantidad+"+cantidad+" where codigo="+codigo+" estado="+etapa+1+";";
+			String updateIncQuery = "update producto set cantidad=cantidad+"+cantidad+" where codigo="+codigo+" estado="+etapa+1;
 			statement = conexion.prepareStatement(updateIncQuery);
 			statement.executeUpdate();
-			String updateDecQuery = "update producto set cantidad=0 where codigo="+codigo+" estado="+etapa+";";
+			String updateDecQuery = "update producto set cantidad=0 where codigo="+codigo+" estado="+etapa;
 			statement = conexion.prepareStatement(updateDecQuery);
 			statement.executeUpdate();
 
@@ -200,7 +200,7 @@ public class ConsultaDAO {
 		try {
 			establecerConexion(cadenaConexion, usuario, clave);
 
-			String updateDecQuery = "update producto set cantidad=cantidad+"+cantidad+" where codigo="+codigo+";";
+			String updateDecQuery = "update producto set cantidad=cantidad+"+cantidad+" where codigo="+codigo;
 			statement = conexion.prepareStatement(updateDecQuery);
 			statement.executeUpdate();
 		} catch (SQLException e) {
@@ -524,17 +524,17 @@ public class ConsultaDAO {
 		try {
 			establecerConexion(cadenaConexion, usuario, clave);
 
-			String selectQuery = "select codigoProducto from PEDIDO where codigo="+pedido+";";
+			String selectQuery = "select codigoProducto from PEDIDO where codigo="+pedido;
 			statement = conexion.prepareStatement(selectQuery);
 			ResultSet rs = statement.executeQuery();
 			double producto = 0;
 			if(rs.next()){
 				producto = rs.getDouble("codigoProducto");
 			}
-			String updateQueryPedi = "update pedido set estado='Finalizado' where estado='Listo' and codigo="+pedido+";";
+			String updateQueryPedi = "update pedido set estado='Finalizado' where estado='Listo' and codigo="+pedido;
 			statement = conexion.prepareStatement(updateQueryPedi);
 			statement.executeUpdate();
-			String updateQueryProd = "update producto set cantidad=0 where estado=0 and codigoProducto="+producto+";";
+			String updateQueryProd = "update producto set cantidad=0 where estado=0 and codigoProducto="+producto;
 			statement = conexion.prepareStatement(updateQueryProd);
 			statement.executeUpdate();
 		} catch (SQLException e) {
@@ -772,7 +772,9 @@ public class ConsultaDAO {
 			{
 				//crea y despacha el pedido
 
-				int nuevo = cantidadDisponible-cantidad;
+				pSRequeridosNum = conexion.prepareStatement("select producto.codigo where ");
+				
+				int nuevo = cantidadDisponible-cantidad;			
 				PreparedStatement  psaactualizarDisponibles1 = conexion.prepareStatement("update Productos set cantidad="+nuevo+" where Proceso.codigoProducto="+idProceso+" and etapa=0");
 				PreparedStatement  psaactualizarDisponibles2 = conexion.prepareStatement("update Productos set cantidad=cantidad+"+cantidad+" where Proceso.codigoProducto="+idProceso+" and etapa=-1");
 				psaactualizarDisponibles1.executeUpdate();
@@ -1353,7 +1355,7 @@ public class ConsultaDAO {
 			String telefno, String codPostal) throws Exception {
 		// TODO Auto-generated method stub
 		PreparedStatement stament = null;
-		String insertQuery = "insert into usuario ('login','direccionelectronica','clave','documentoid','tipodocumento','nacionalidad','ciudad','departamento','direccionfisica','codigopostal','telefono') values ('"+login+"','"+direccionElectronica+"','"+pass+"','"+idcli+"','"+selTipoId+"','"+nacionalidad+"','"+ciudad+"','"+departamento+"','"+direccionFisica+"','"+codPostal+"','"+telefno+"');";
+		String insertQuery = "insert into usuario ('login','direccionelectronica','clave','documentoid','tipodocumento','nacionalidad','ciudad','departamento','direccionfisica','codigopostal','telefono') values ('"+login+"','"+direccionElectronica+"','"+pass+"','"+idcli+"','"+selTipoId+"','"+nacionalidad+"','"+ciudad+"','"+departamento+"','"+direccionFisica+"','"+codPostal+"','"+telefno+"')";
 		try{
 			establecerConexion(cadenaConexion, usuario, clave);
 			stament = conexion.prepareStatement(insertQuery);
@@ -1377,7 +1379,7 @@ public class ConsultaDAO {
 			String id, String nombrelegal, String sinv, String tipoIdLegal) throws Exception {
 		// TODO Auto-generated method stub
 		PreparedStatement stament = null;
-		String insertQuery = "insert into cliente ('login','direccionelectronica','nombrelegal','idlegal', 'tipoidlegal','registrosinv','codigo') values ('"+login+"','"+direccionElectronica+"','"+nombrelegal+"','"+id+"','"+tipoIdLegal+"','"+sinv+"');";
+		String insertQuery = "insert into cliente ('login','direccionelectronica','nombrelegal','idlegal', 'tipoidlegal','registrosinv','codigo') values ('"+login+"','"+direccionElectronica+"','"+nombrelegal+"','"+id+"','"+tipoIdLegal+"','"+sinv+"')";
 		try{
 			establecerConexion(cadenaConexion, usuario, clave);
 			stament = conexion.prepareStatement(insertQuery);
