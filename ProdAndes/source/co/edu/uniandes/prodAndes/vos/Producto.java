@@ -19,8 +19,6 @@ public class Producto {
 	
 	private double costo;
 	
-	private int estado;
-	
 	private int numEtapas;
 	
 	private Proceso proceso;
@@ -34,7 +32,7 @@ public class Producto {
 		pedidos = new ArrayList<Pedido>();
 	}
 	
-	public Producto(long codigoT, String nombreT, int cantidadDisponibleT, int cantidadEnProduccionT, String descripcionT,double costoT, int estadoT, int numEtapasT)
+	public Producto(long codigoT, String nombreT, int cantidadDisponibleT, int cantidadEnProduccionT, String descripcionT,double costoT, int numEtapasT)
 	{
 		pedidos = new ArrayList<Pedido>();
 		codigo=codigoT;
@@ -43,7 +41,6 @@ public class Producto {
 		cantidadEnProduccion=cantidadEnProduccionT;
 		descripcion=descripcionT;
 		costo=costoT;
-		estado=estadoT;
 		numEtapas=numEtapasT;
 	}
 
@@ -91,14 +88,7 @@ public class Producto {
 		this.costo = costo;
 	}
 
-	public int getEstado() {
-		return estado;
-	}
-
-	public void setEstado(int estado) {
-		this.estado = estado;
-	}
-
+	
 	public Proceso getProceso() {
 		return proceso;
 	}
