@@ -246,8 +246,8 @@ public class ProdAndes
      * @return
      * @throws Exception
      */
-    public ArrayList consultarExistencia(String tipo, String inventario,String etapa, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception{
-    	return dao.consultarExistenciaDe(tipo, inventario, etapa, fechaEntrega, fechaSolicitud, ordenes, grupos);
+    public ArrayList consultarExistencia(String tipo, String inventario, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception{
+    	return dao.consultarExistenciaDe(tipo, inventario, fechaEntrega, fechaSolicitud, ordenes, grupos);
     }
     
     public ArrayList consultarEtapaProduccion() throws Exception{
