@@ -246,7 +246,7 @@ public class ProdAndes
      * @return
      * @throws Exception
      */
-    public ArrayList consultarExistencia(String tipo, String inventario, String etapa, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception{
+    public ArrayList consultarExistencia(String tipo, String inventario,String etapa, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception{
     	return dao.consultarExistenciaDe(tipo, inventario, etapa, fechaEntrega, fechaSolicitud, ordenes, grupos);
     }
     
@@ -293,5 +293,16 @@ public class ProdAndes
 			String nombreo, String cargo) throws Exception {
 		dao.registrarUsuario(login, direccionElectronica, pass, idcli, selTipoId, ciudad, nacionalidad, departamento, direccionFisica, telefno, codPostal);
 		dao.registrarOperario(login, direccionElectronica, cargo, nombre);
+	}
+
+	public void registrarProveedor(String login, String pass, String idcli,
+			String selTipoId, String nombre, String nacionalidad,
+			String direccionElectronica, String ciudad, String departamento,
+			String direccionFisica, String telefno, String codPostal,
+			String nombrelegal, String id, String tipoIdLegal, String cantidad,
+			String selMate, String tiempo) throws Exception {
+		dao.registrarUsuario(login, direccionElectronica, pass, idcli, selTipoId, ciudad, nacionalidad, departamento, direccionFisica, telefno, codPostal);
+		int codigoProv = dao.registrarProveedor(login, direccionElectronica, nombrelegal, id, tipoIdLegal, cantidad, selMate, tiempo);
+		dao.registrarMaterialProvisto(codigoProv,selMate, cantidad, tiempo);
 	}
 }

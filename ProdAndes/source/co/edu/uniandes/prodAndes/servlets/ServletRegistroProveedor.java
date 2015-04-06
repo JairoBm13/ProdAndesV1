@@ -2,9 +2,14 @@ package co.edu.uniandes.prodAndes.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import oracle.net.aso.s;
+import co.edu.uniandes.prodAndes.dao.ConsultaDAO;
+import co.edu.uniandes.prodAndes.vos.Material;
 
 public class ServletRegistroProveedor extends ServletTemplate{
 
@@ -130,21 +135,44 @@ public class ServletRegistroProveedor extends ServletTemplate{
 				respuesta.println("                                    	<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span>");
 				respuesta.println("                   					</div>");
 				respuesta.println("				<!-- aqui es para cada tipo de usuario-->");
-				respuesta.println("                                    <label for=\"nombre\">Nombre:</label>");
-				respuesta.println("                                    <div class=\"input-group\">");
-				respuesta.println("                                    	<input type=\"text\" id=\"nombre\" name=\"nombre\" class=\"form-control\" required><br>");
+				respuesta.println("				<label for=\"nombrelegal\">Representante legal:</label>");
+				respuesta.println("                                 <div class=\"input-group\">");
+				respuesta.println("                                    	<input type=\"text\" id=\"nombrelegal\" name=\"nombrelegal\" class=\"form-control\" required><br>");
 				respuesta.println("                                    	<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span>");
 				respuesta.println("                   					</div>");
-				respuesta.println("                                    <label for=\"selcargo\">Cargo a desempe&ntilde;ar:</label>");
+				respuesta.println("                                    <label for=\"idlegal\">Id de representante legal:</label>");
 				respuesta.println("                                    <div class=\"input-group\">");
-				respuesta.println("                                    	<select name=\"selcargo\" id=\"selcargo\" class=\"form-control\" required><br>");
-				respuesta.println("                                            <option value=\"Gerente\">Gerente</option>");
-				respuesta.println("                                            <option value=\"Supervisor\">Supervisor</option>");
-				respuesta.println("                                            <option value=\"Operario\">Operario</option>");
+				respuesta.println("                                    	<input type=\"text\" id=\"idlegal\" name=\"idlegal\" class=\"form-control\" required><br>");
+				respuesta.println("                                    	<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span>");
+				respuesta.println("                   					</div>");
+				respuesta.println("                                    <label for=\"tipoIdLegal\">Tipo Id del representate legal:</label>");
+				respuesta.println("                                    <div class=\"input-group\">");
+				respuesta.println("                                    	<select name=\"selTipoIdLegal\" id=\"selTipoId\" class=\"form-control\" required><br>");
+				respuesta.println("                                            <option value=\"cedula\">Cedula</option>");
+				respuesta.println("                                            <option value=\"c. extranjeria\">Cedula de extranjeria</option>");
+				respuesta.println("                                            <option value=\"NIT\">NIT</option>");
+				respuesta.println("                                            <option value=\"NIT extrajenro\">NIT extranejro</option>");
 				respuesta.println("	                                    </select>");
 				respuesta.println("                                    	<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span>");
 				respuesta.println("                   					</div>");
-				respuesta.println("                                    <input type=\"submit\" value=\"Registrar\">");
+				respuesta.println("                                    <label for=\"selmaterial\">Material que provee:</label>");
+				respuesta.println("                                    <div class=\"input-group\">");
+				respuesta.println("                                    	<select name=\"selmaterial\" id=\"selmaterial\" class=\"form-control\" required><br>");
+				respuesta.println(                                           listarmateriales());
+				respuesta.println("	                                    </select>");
+				respuesta.println("                                    	<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span>");
+				respuesta.println("                   					</div>");
+				respuesta.println("                                    <label for=\"cantidadMat\">Maximo abastecimiento:</label>");
+				respuesta.println("                                    <div class=\"input-group\">");
+				respuesta.println("                                    	<input type=\"text\" id=\"cantidadMat\" name=\"cantidadMat\" class=\"form-control\" required>");
+				respuesta.println("                                    	<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span>");
+				respuesta.println("                                    </div>");
+				respuesta.println("                                    <label for=\"tiempoAbas\">Tiempo de entrega:</label>");
+				respuesta.println("                                    <div class=\"input-group\">");
+				respuesta.println("                                    	<input type=\"text\" id=\"tiempoAbas\" name=\"tiempoAbas\" class=\"form-control\" required>");
+				respuesta.println("                                    	<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span>");
+				respuesta.println("                                    </div>");
+
 				respuesta.println("                             ");
 				respuesta.println("                                </form>");
 				respuesta.println("						</div>");
@@ -188,10 +216,13 @@ public class ServletRegistroProveedor extends ServletTemplate{
 
 				String nombrelegal = request.getParameter("nombreLegal");
 				String id = request.getParameter("idLegal");
-				String sinv = request.getParameter("sinv");
 				String tipoIdLegal = request.getParameter("selTipoIdLegal");
+				
+				String selMate = request.getParameter("selmaterial");
+				String cantidad = request.getParameter("cantidadMat");
+				String tiempo = request.getParameter("tiempoAbas");
 				try {
-					fachada.registrarCliente(login,pass,idcli,selTipoId,nombre,nacionalidad,direccionElectronica,ciudad,departamento,direccionFisica,telefno,codPostal,nombrelegal,id,sinv,tipoIdLegal);
+					fachada.registrarProveedor(login,pass,idcli,selTipoId,nombre,nacionalidad,direccionElectronica,ciudad,departamento,direccionFisica,telefno,codPostal,nombrelegal,id,tipoIdLegal, cantidad, selMate, tiempo);
 					respuesta.println("<!-- Start Page Banner -->");
 					respuesta.println("		<div class=\"page-banner\" style=\"padding:40px 0; background: url(images/slide-02-bg.jpg) center #f9f9f9;\">");
 					respuesta.println("			<div class=\"container\">");
@@ -304,6 +335,41 @@ public class ServletRegistroProveedor extends ServletTemplate{
 			respuesta.println("		</div>");
 			respuesta.println("		<!-- End Content -->");
 		}
+	}
+
+	private String listarmateriales() {
+		String html = "";
+		ArrayList<Material> materiales = fachada.darTodosMaterialesCodigoNombreTipo();
+    	boolean cambio = false;
+    	for(int i = 0; i<materiales.size();i++)
+    	{
+    		Material material = materiales.get(i);
+    		if(!cambio)
+    		{
+    			if(material.getTipo().equals(ConsultaDAO.TIPO_MATERIAL_COMPONENTE))
+    			{
+    				if(i==0)
+    					html += "<optgroup label=\" "+ConsultaDAO.TIPO_MATERIAL_COMPONENTE+" \"> \n";
+    				html += "<option value=\""+material.getCodigo()+"\">"+material.getNombre()+"</option> \n ";
+    			}
+    			else
+    			{
+    				if(i>0)
+    					html += "   </optgroup> \n";
+    					html += "       <optgroup label=\" "+ConsultaDAO.TIPO_MATERIAL_MATERIA_PRIMA+" \"> \n";
+    					html += "       <option value=\""+material.getCodigo()+"\">"+material.getNombre()+"</option> \n";
+    				cambio=true;
+    			}
+    		}
+    		else
+    		{
+    			html+= "       <option value=\""+material.getCodigo()+"\">"+material.getNombre()+"</option> \n";
+    		}
+    		
+    		if(i==materiales.size())
+    			html += "   </optgroup> \n";
+    	}
+    	return html;
 	}
 
 }

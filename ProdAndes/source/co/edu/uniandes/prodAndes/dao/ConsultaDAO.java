@@ -1418,4 +1418,17 @@ public class ConsultaDAO {
 			closeConnection(conexion);
 		}
 	}
+
+	public int registrarProveedor(String login, String direccionElectronica,
+			String nombrelegal, String id, String tipoIdLegal, String cantidad,
+			String selMate, String tiempo) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public void registrarMaterialProvisto(int codigoProv, String selMate,
+			String cantidad, String tiempo) {
+		// TODO Auto-generated method stub
+		
+	}
 }
