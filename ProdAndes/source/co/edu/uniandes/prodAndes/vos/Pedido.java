@@ -65,24 +65,24 @@ public class Pedido {
 		return fechaPedido;
 	}
 
-	public void setFechaPedido(Date fechaPedido) {
-		this.fechaPedido = fechaPedido;
+	public void setFechaPedido(Date date) {
+		this.fechaPedido = date;
 	}
 
 	public Date getFechaEsperada() {
 		return fechaEsperada;
 	}
 
-	public void setFechaEsperada(Date fechaEsperada) {
-		this.fechaEsperada = fechaEsperada;
+	public void setFechaEsperada(Date date) {
+		this.fechaEsperada = date;
 	}
 
 	public Date getFechaEntrega() {
 		return fechaEntrega;
 	}
 
-	public void setFechaEntrega(Date fechaEntrega) {
-		this.fechaEntrega = fechaEntrega;
+	public void setFechaEntrega(Date date) {
+		this.fechaEntrega = date;
 	}
 
 	public Administrador getAdmin() {

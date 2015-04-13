@@ -10,15 +10,12 @@
  */
 package co.edu.uniandes.prodAndes.dao;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Properties;
-
 import co.edu.uniandes.prodAndes.vos.Administrador;
 import co.edu.uniandes.prodAndes.vos.Cliente;
+import co.edu.uniandes.prodAndes.vos.EstadoPedidoValue;
 import co.edu.uniandes.prodAndes.vos.EtapaProduccion;
 import co.edu.uniandes.prodAndes.vos.Material;
 import co.edu.uniandes.prodAndes.vos.Operario;
@@ -26,6 +23,8 @@ import co.edu.uniandes.prodAndes.vos.Pedido;
 import co.edu.uniandes.prodAndes.vos.PedidoMaterial;
 import co.edu.uniandes.prodAndes.vos.Producto;
 import co.edu.uniandes.prodAndes.vos.Proveedor;
+import co.edu.uniandes.prodAndes.vos.ProveedorValue;
+
 /**
  * Clase ConsultaDAO, encargada de hacer las consultas básicas para el cliente
  */
@@ -44,17 +43,17 @@ public class ConsultaDAO {
 	private static final String CONSULTA_MATERIAL = "Material";
 
 	private static final String CONSULTA_ETAPA_PROD = "Etapa Produccion";
-	
+
 	public static final String TIPO_MATERIAL_MATERIA_PRIMA = "Materia Prima";
-	
+
 	public static final String TIPO_MATERIAL_COMPONENTE = "Componente";
-	
+
 	public static final String PEDIDO_ESTADO_LISTO = "listo";
-	
+
 	public static final String PEDIDO_ESTADO_EN_PRODUCCION = "enProduccion";
 
 	public static final String PEDIDO_ESTADO_EN_ESPERA = "enEspera";
-	
+
 	//----------------------------------------------------
 	//Atributos
 	//----------------------------------------------------
@@ -99,10 +98,10 @@ public class ConsultaDAO {
 	{
 		try
 		{
-	        cadenaConexion = "jdbc:oracle:thin:@prod.oracle.virtual.uniandes.edu.co:1531:prod";
-	        usuario = "ISIS2304051510";
-	        clave = "dmariafifth";
-	        final String driver = "oracle.jdbc.driver.OracleDriver";
+			cadenaConexion = "jdbc:oracle:thin:@prod.oracle.virtual.uniandes.edu.co:1531:prod";
+			usuario = "ISIS2304051510";
+			clave = "dmariafifth";
+			final String driver = "oracle.jdbc.driver.OracleDriver";
 			Class.forName(driver);
 		}
 		catch(Exception e)
@@ -536,9 +535,11 @@ public class ConsultaDAO {
 			if(rs.next()){
 				producto = rs.getDouble("codigoProducto");
 			}
+			statement.close();
 			String updateQueryPedi = "update pedido set estado='Finalizado' where estado='Listo' and codigo="+pedido;
 			statement = conexion.prepareStatement(updateQueryPedi);
 			statement.executeUpdate();
+			statement.close();
 			String updateQueryProd = "update producto set cantidad=0 where estado=0 and codigoProducto="+producto;
 			statement = conexion.prepareStatement(updateQueryProd);
 			statement.executeUpdate();
@@ -588,10 +589,8 @@ public class ConsultaDAO {
 				if(!clave.equals(pass)) return null;
 				String ciudad = rs.getString("ciudad");
 				String codigoPostal = rs.getString("codigoPostal");
-				String direccion = rs.getString("direccionElectronica");
 				int documentoId = rs.getInt("documentoId");
 				String nacionalidad = rs.getString("nacionalidad");
-				String login = rs.getString("login");
 				String telefono = rs.getNString("telefono");
 				int tipoDocumento = rs.getInt("tipoDocumento");
 
@@ -776,13 +775,13 @@ public class ConsultaDAO {
 			if(cantidadDisponible>=cantidad)
 			{
 				//actualiza cantidad disponeble
-				
+
 				int nuevo = cantidadDisponible-cantidad;			
 				PreparedStatement  psaactualizarDisponibles1 = conexion.prepareStatement("update Productos set cantidad="+nuevo+" where Proceso.codigoProducto="+idProducto);
 				psaactualizarDisponibles1.executeUpdate();
 				psaactualizarDisponibles1.close();
-				
-				
+
+
 				//Codigo del admin y crea pedido
 				pSRequeridosNum = conexion.prepareStatement("select codigo from Administrador");
 				ResultSet admin = pSRequeridosNum.executeQuery();
@@ -837,11 +836,11 @@ public class ConsultaDAO {
 					//Actualiza los productos si se puede fabricar
 
 					PreparedStatement  psaactualizarDisponibles1 = conexion.prepareStatement("update Productos set cantidad="+0+" where Producto.Codigo="+idProducto);
-					
+
 					psaactualizarDisponibles1.executeUpdate();
-					
+
 					psaactualizarDisponibles1.close();
-					
+
 
 					pSRequeridosNum.close();
 					pSRequeridosNum = conexion.prepareStatement("select * from matDisp");
@@ -1252,111 +1251,122 @@ public class ConsultaDAO {
 
 		return rta;
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	 public ArrayList<Producto> darTodosProductosCodigoNombre() throws Exception
-	    {
-	    	PreparedStatement prepStmt = null;
-	    	ArrayList<Producto> resp = new ArrayList<Producto>();
-	    	
-	    	try {
-	    		establecerConexion(cadenaConexion, usuario, clave);
-	    		
-	    		String sentencia = "SELECT codigo, nombre from Producto";
-	    		
-	    		
-	    		prepStmt = conexion.prepareStatement(sentencia);
-	    		
-	    		ResultSet rsProducto = prepStmt.executeQuery();
-	    		
-	    		
-	    		while(rsProducto.next())
-	    		{
-	    			Producto producto = new Producto();
-	    			producto.setCodigo(rsProducto.getLong("codigo"));
-	    			producto.setNombre(rsProducto.getString("nombre"));
-	    			
-	    			resp.add(producto);
-	    		}
-	    	} catch (SQLException e) {
-	    		e.printStackTrace();
-	    		System.out.println("metodo1");
-	    		throw new Exception("ERROR = ConsultaDAO: loadRowsBy(..) Agregando parametros y executando el statement!!!");
-	    	}finally 
-	    	{
-	    		if (prepStmt != null) 
-	    		{
-	    			try {
-	    				prepStmt.close();
-	    			} catch (SQLException exception) {
+	public ArrayList<Producto> darTodosProductosCodigoNombre() throws Exception
+	{
+		PreparedStatement prepStmt = null;
+		ArrayList<Producto> resp = new ArrayList<Producto>();
 
-	    				throw new Exception("ERROR: ConsultaDAO: loadRow() =  cerrando una conexión.");
-	    			}
-	    		}
-	    		closeConnection(conexion);
-	    	}
-	    	return resp;
-	    }
-	 
-	 /**
-	  * 
-	  * @return
-	  * @throws Exception
-	  */
-	 public ArrayList<Material> darTodosMaterialesCodigoNombreTipo() throws Exception
-	    {
-	    	PreparedStatement prepStmt = null;
-	    	ArrayList<Material> resp = new ArrayList<Material>();
-	    	
-	    	try {
-	    		establecerConexion(cadenaConexion, usuario, clave);
-	    		
-	    		String sentencia = "SELECT codigo, nombre, tipo from Material order by tipo";
-	    		
-	    		
-	    		prepStmt = conexion.prepareStatement(sentencia);
-	    		
-	    		ResultSet rsMaterial = prepStmt.executeQuery();
-	    		
-	    		
-	    		while(rsMaterial.next())
-	    		{
-	    			Material material = new Material();
-	    			material.setCodigo(rsMaterial.getLong("codigo"));
-	    			material.setNombre(rsMaterial.getString("nombre"));
-	    			material.setTipo(rsMaterial.getString("tipo"));
-	    			
-	    			resp.add(material);
-	    		}
-	    	} catch (SQLException e) {
-	    		e.printStackTrace();
-	    		System.out.println("metodo1");
-	    		throw new Exception("ERROR = ConsultaDAO: loadRowsBy(..) Agregando parametros y executando el statement!!!");
-	    	}finally 
-	    	{
-	    		if (prepStmt != null) 
-	    		{
-	    			try {
-	    				prepStmt.close();
-	    			} catch (SQLException exception) {
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
 
-	    				throw new Exception("ERROR: ConsultaDAO: loadRow() =  cerrando una conexión.");
-	    			}
-	    		}
-	    		closeConnection(conexion);
-	    	}
-	    	return resp;
-	    }
+			String sentencia = "SELECT codigo, nombre from Producto";
 
-	public void registrarUsuario(String login, String direccionElectronica,
-			String pass, String idcli, String selTipoId, String ciudad,
-			String nacionalidad, String departamento, String direccionFisica,
-			String telefno, String codPostal) throws Exception {
-		// TODO Auto-generated method stub
+
+			prepStmt = conexion.prepareStatement(sentencia);
+
+			ResultSet rsProducto = prepStmt.executeQuery();
+
+
+			while(rsProducto.next())
+			{
+				Producto producto = new Producto();
+				producto.setCodigo(rsProducto.getLong("codigo"));
+				producto.setNombre(rsProducto.getString("nombre"));
+
+				resp.add(producto);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("metodo1");
+			throw new Exception("ERROR = ConsultaDAO: loadRowsBy(..) Agregando parametros y executando el statement!!!");
+		}finally 
+		{
+			if (prepStmt != null) 
+			{
+				try {
+					prepStmt.close();
+				} catch (SQLException exception) {
+
+					throw new Exception("ERROR: ConsultaDAO: loadRow() =  cerrando una conexión.");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return resp;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<Material> darTodosMaterialesCodigoNombreTipo() throws Exception
+	{
+		PreparedStatement prepStmt = null;
+		ArrayList<Material> resp = new ArrayList<Material>();
+
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+
+			String sentencia = "SELECT codigo, nombre, tipo from Material order by tipo";
+
+
+			prepStmt = conexion.prepareStatement(sentencia);
+
+			ResultSet rsMaterial = prepStmt.executeQuery();
+
+
+			while(rsMaterial.next())
+			{
+				Material material = new Material();
+				material.setCodigo(rsMaterial.getLong("codigo"));
+				material.setNombre(rsMaterial.getString("nombre"));
+				material.setTipo(rsMaterial.getString("tipo"));
+
+				resp.add(material);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("metodo1");
+			throw new Exception("ERROR = ConsultaDAO: loadRowsBy(..) Agregando parametros y executando el statement!!!");
+		}finally 
+		{
+			if (prepStmt != null) 
+			{
+				try {
+					prepStmt.close();
+				} catch (SQLException exception) {
+
+					throw new Exception("ERROR: ConsultaDAO: loadRow() =  cerrando una conexión.");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return resp;
+	}
+
+	/**
+	 * 
+	 * @param login
+	 * @param direccionElectronica
+	 * @param pass
+	 * @param idcli
+	 * @param selTipoId
+	 * @param ciudad
+	 * @param nacionalidad
+	 * @param departamento
+	 * @param direccionFisica
+	 * @param telefno
+	 * @param codPostal
+	 * @throws Exception
+	 */
+	public void registrarUsuario(String login, String direccionElectronica,	String pass, String idcli, String selTipoId, String ciudad, String nacionalidad, String departamento, String direccionFisica, String telefno, String codPostal) throws Exception {
 		PreparedStatement stament = null;
 		String insertQuery = "insert into usuario ('login','direccionelectronica','clave','documentoid','tipodocumento','nacionalidad','ciudad','departamento','direccionfisica','codigopostal','telefono') values ('"+login+"','"+direccionElectronica+"','"+pass+"','"+idcli+"','"+selTipoId+"','"+nacionalidad+"','"+ciudad+"','"+departamento+"','"+direccionFisica+"','"+codPostal+"','"+telefno+"')";
 		try{
@@ -1422,16 +1432,536 @@ public class ConsultaDAO {
 		}
 	}
 
-	public int registrarProveedor(String login, String direccionElectronica,
-			String nombrelegal, String id, String tipoIdLegal, String cantidad,
-			String selMate, String tiempo) {
+	public int registrarProveedor(String login, String direccionElectronica, String nombrelegal, String id, String tipoIdLegal, String cantidad, String selMate, String tiempo) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public void registrarMaterialProvisto(int codigoProv, String selMate,
-			String cantidad, String tiempo) {
-		// TODO Auto-generated method stub
+	/**
+	 * 
+	 * @param codigoProv
+	 * @param selMate
+	 * @param cantidad
+	 * @param tiempo
+	 * @throws Exception
+	 */
+	public void registrarMaterialProvisto(int codigoProv, String selMate, String cantidad, String tiempo) throws Exception {
+		PreparedStatement statement = null;
+		String insertQuery = "insert into suministro (maximacantidad,tiempoentrega,codigoproveedor,codigomaterial) values ("+cantidad+","+tiempo+")";
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			statement = conexion.prepareStatement(insertQuery);
+			statement.executeUpdate();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			throw new Exception ("Este material ya existe");
+		}
+		finally{
+			if (statement != null){
+				try {
+					statement.close();
+				} catch (Exception e2) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+	}
+
+	/**
+	 * 
+	 * @param nombre
+	 * @param unidad
+	 * @param cantidad
+	 * @param tipo
+	 * @return
+	 * @throws Exception
+	 */
+	public int registrarMaterial(String nombre, String unidad, String cantidad, String tipo) throws Exception {
+		int codigo = 0;
+		PreparedStatement statement = null;
+		String insertQuery = "insert into material (codigo,nombre,unidad,tipo,cantidad,ultimoabastecimiento) values (incremento_id_material.NextVal,'"+nombre+"','"+unidad+"','"+tipo+"',"+cantidad+", now())";
+		String selectQuery = "select codigo from material where nombre='"+nombre+"'";
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			statement = conexion.prepareStatement(insertQuery);
+			statement.executeUpdate();
+			statement.close();
+			statement = conexion.prepareStatement(selectQuery);
+			ResultSet rs = statement.executeQuery();
+			if(rs.next());
+			codigo = rs.getInt("codigo");
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			throw new Exception ("Este material ya existe");
+		}
+		finally{
+			if (statement != null){
+				try {
+					statement.close();
+				} catch (Exception e2) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return codigo;
+	}
+
+	/**
+	 * 
+	 * @param nombre
+	 * @param etapa
+	 * @param cantidad
+	 * @param tiempo
+	 * @return
+	 * @throws Exception
+	 */
+	public int registrarEstacion(String nombre, String etapa, String cantidad, String tiempo) throws Exception {
+		int codigo = -1;
+		PreparedStatement statement = null;
+		String insertQuery = "insert into estacionproduccion (codigo,nombre,cantidad,tiempo,codigoetapa) values (incremento_id_esproduccion.NextVal,'"+nombre+"',"+cantidad+","+tiempo+", "+etapa+")";
+		String selectQuery = "select codigo from estacionproduccion where nombre='"+nombre+"'";
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			statement = conexion.prepareStatement(insertQuery);
+			statement.executeUpdate();
+			statement.close();
+			statement = conexion.prepareStatement(selectQuery);
+			ResultSet rs = statement.executeQuery();
+			if(rs.next()){
+				codigo = rs.getInt("codigo");}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			throw new Exception ("Este material ya existe");
+		}
+		finally{
+			if (statement != null){
+				try {
+					statement.close();
+				} catch (Exception e2) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return codigo;
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<EtapaProduccion> consultarTodasLasEtapas() throws Exception {
+		PreparedStatement statement = null;
+		ArrayList<EtapaProduccion> respuesta = new ArrayList<EtapaProduccion>();
+		String selectQuery = "select codigo, nombre from etapaproduccion";
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			statement = conexion.prepareStatement(selectQuery);
+			ResultSet rs = statement.executeQuery();
+			while(rs.next()){
+				EtapaProduccion ep = new EtapaProduccion();
+				ep.setCodigo(rs.getLong("codigo"));
+				ep.setNombre(rs.getString("nombre"));
+				respuesta.add(ep);
+			}
+		} catch (Exception e) {
+			throw new Exception ("Problema al consultar a la base de datos");
+		}
+		finally{
+			if(statement != null){
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return respuesta;
+	}
+
+	//---------------------------------------------------------------
+	// Iteración 3 TODO
+	//---------------------------------------------------------------
+
+		//-----------------------------------------------------------
+		// Requerimientos funcionales de consulta TODO
+		//-----------------------------------------------------------
+	
+	/**
+	 * Muestra la información de los pedidos y su estado actual. 
+	 * Esta consulta puede ser filtrada por diferentes conceptos y se espera como resultado: 
+	 * cliente, productos, cantidades, costos, fechas, materiales requeridos para satisfacer el pedido, .... 
+	 * Esta operación es realizada por el encargado de ProdAndes
+	 * @param cliente
+	 * @param productos
+	 * @param cantidadMinima
+	 * @param cantidadMaxima
+	 * @param costoMin
+	 * @param costoMax
+	 * @param fechaMin
+	 * @param fechaMax
+	 * @param materiales
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<EstadoPedidoValue> consultarEstadoPedidos(String cliente, ArrayList<String> productos, String cantidadMinima, String cantidadMaxima, String costoMin, String costoMax, String fechaMin, String fechaMax, ArrayList<String> materiales) throws Exception{
+		ArrayList<EstadoPedidoValue> pedidos = new ArrayList<EstadoPedidoValue>();
+		PreparedStatement statement = null;
+
+		ArrayList<String> select = new ArrayList<String>();
+		select.add("pedido.codigo as codigopedido");
+		select.add("cliente.codigo as codigocliente");
+		select.add("cliente.nombrelegal as cliente");
+		select.add("cantidad as cantidad");
+		select.add("fechapedido as fechap");
+		select.add("fechaEntrega as fechae");
+		select.add("fechaEsperada as fechaes");
+		select.add("nombre as producto");
+		select.add("costopedido as costo");
+		select.add("tipo as tipo");
+		select.add("codigomaterial as codMat");
+		select.add("nombrematerial");
+		select.add("estado");
+
+		ArrayList<String> where = new ArrayList<String>();
+		if(!cliente.isEmpty()){where.add(cliente);}
+
+		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad between "+cantidadMinima+" and "+cantidadMaxima);}
+		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}
+		else{where.add("cantidad < "+cantidadMaxima);}
+
+		if(!fechaMin.isEmpty() && !fechaMax.isEmpty()){where.add("fechapedido between TO_DATE('"+fechaMin+"', 'DD-MM-YYYY') and TO_DATE('"+fechaMax+"', 'DD-MM-YYYY')");}
+		else if(!fechaMin.isEmpty() && fechaMax.isEmpty()){where.add("fechapedido > TO_DATE('"+fechaMin+"', 'DD-MM-YYYY')");}
+		else{where.add("fechapedido < TO_DATE('"+fechaMin+"', 'DD-MM-YYYY')");}
+
+		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("costopedido between "+costoMin+" and "+costoMax);}
+		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("costopedido > "+costoMin);}
+		else{where.add("costopedido < "+costoMax);}
 		
+		ArrayList<String> order = new ArrayList<String>();
+		order.add("codigopedido");
+
+		//		String costos = "(select pedido.cantidad*producto.COSTO as costopedido from pedido inner join producto on producto.CODIGO=pedido.CODIGOPRODUCTO)";
+		String tabla = "(select pedido.cantidad*producto.COSTO as costopedido, pedido.codigo  "
+				+ " pedido inner join producto on producto.CODIGO=pedido.CODIGOPRODUCTO) c "
+				+ "inner join PEDIDO on c.codigo=PEDIDO.CODIGO  "
+				+ "inner join ("
+				+ "select codigomaterial, nombrematerial, tipo,  codigoproducto as codproducto, nombre "
+				+ "from (select codigomaterial, nombrematerial, tipo, codigoproducto"
+				+ " from (select codigomaterial, codigoetapa, nombrematerial, tipo from ("
+				+ "select codigomaterial, codigoestacion, nombre as nombrematerial, tipo "
+				+ "from requiere  inner join material  on material.CODIGO=requiere.CODIGOMATERIAL)"
+				+ "inner join estacionproduccion on estacionproduccion.codigo=codigoestacion) "
+				+ "inner join ETAPAPRODUCCION on ETAPAPRODUCCION.CODIGO=codigoetapa) "
+				+ "inner join producto on codigoproducto=producto.codigo) on PEDIDO.CODIGO=codproducto";
+		
+		String selectQuery = generateQuery(select, tabla, where, order, new ArrayList<String>());
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			statement = conexion.prepareStatement(selectQuery);
+			ResultSet rs = statement.executeQuery();
+
+			while(rs.next()){
+				
+				EstadoPedidoValue vos = new EstadoPedidoValue();
+				vos.setCliente(rs.getString("cliente"));
+				vos.setCodigo(rs.getString("codigopedido"));
+				vos.setCodigoCliente(rs.getString("codigocliente"));
+				vos.setCantidad(rs.getString("cantidad"));
+				vos.setFechap(rs.getString("fechap"));
+				vos.setFechaes(rs.getString("fechaes"));
+				vos.setCosto(rs.getString("costo"));
+				vos.setFechae(rs.getString("fechae"));
+				vos.setNombreProducto(rs.getString("producto"));
+				vos.setEstado(rs.getString("estado"));
+
+				String codped = rs.getString("codigopedido");
+				ArrayList<Material> mats = new ArrayList<Material>();
+				while(rs.getString("codigopedido").equals(codped)){
+					
+					Material mat = new Material();
+					mat.setNombre(rs.getString("nombrematerial"));
+					mat.setTipo(rs.getString("tipo"));
+					mat.setCodigo(rs.getLong("codMat"));
+					
+					mats.add(mat);
+					
+					rs.next();
+				}
+
+				vos.setMateriales(mats);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		finally{
+			if(statement != null){
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return pedidos;
+	}
+
+	/**
+	 * RFC6. CONSULTAR CLIENTES 
+	 * Muestra  la  información  de  los clientes. 
+	 * Esta  consulta  puede  ser  filtrada  por  diferentes  conceptos  y  se  espera  como resultado: 
+	 * información general, los pedidos,.... Esta operación es realizada por el encargado de ProdAndes.
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<Cliente> consultarClientes() throws Exception{
+		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+		PreparedStatement statement = null;
+		String tabla = "pedido inner join cliente on cliente.codigo=pedido.codigocliente "
+				+ "inner join usuario on cliente.LOGIN=usuario.LOGIN "
+				+ "inner join producto on producto.codigo=pedido.CODIGOPRODUCTO";
+		
+		ArrayList<String> select = new ArrayList<String>();
+		
+		select.add("cliente.direccionelectronica as correo");
+		select.add("ciudad");
+		select.add("codigopostal as zip");
+		select.add("documentoid");
+		select.add("cliente.login");
+		select.add("telefono");
+		select.add("tipodocumento");
+		select.add("departamento");
+		select.add("direccionfisica as dir");
+		select.add("fechapedido");
+		select.add("fechaesperada");
+		select.add("fechaentrega");
+		select.add("pedido.codigo as codproducto");
+		select.add("estado");
+		select.add("registrosinv");
+		select.add("nombrelegal");
+		select.add("tipoidlegal");
+		select.add("producto");
+		select.add("pedido.cantidad");
+		select.add("cliente.codigo as codigocliente");
+		select.add("cliente.idlegal");
+		select.add("nacionalidad");
+		
+		ArrayList<String> where = new ArrayList<String>();
+		ArrayList<String> order = new ArrayList<String>();
+		order.add("cliente.codigo");
+		String selectQuery = generateQuery(select, tabla, where, order, new ArrayList<String>());
+		try{
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			statement = conexion.prepareStatement(selectQuery);
+			ResultSet rs = statement.executeQuery();
+			
+			while(rs.next()){
+				Cliente vos = new Cliente();
+			
+				vos.setCiudad(rs.getString("ciudad"));
+				vos.setCodigo(rs.getLong("codigocliente"));
+				vos.setDepartamento(rs.getString("departamento"));
+				vos.setDireccionElectronica(rs.getString("correo"));
+				vos.setDocumentotold(rs.getLong("documentoid"));
+				vos.setIdLegal(rs.getLong("idlegal"));
+				vos.setLogin(rs.getString("login"));
+				vos.setNacionalidad(rs.getString("nacionalidad"));
+				vos.setNombreLegal(rs.getString("nombrelegal"));
+				vos.setResgistroSINV(rs.getString("registrosinv"));
+				vos.setTelefono(rs.getString("telefono"));
+				vos.setTipoDocumento(rs.getInt("tipodocumento"));
+				vos.setTipoIdLegal(rs.getInt("tipodilegal"));
+				
+				String codcli = rs.getString("codigo.cliente");
+				ArrayList<Pedido> peds = new ArrayList<Pedido>();
+				while(rs.getString("codigo.cliente").equals(codcli)){
+					Pedido ped = new Pedido();
+					ped.setCantidad(rs.getInt("cantidad"));
+					ped.setEstado(rs.getInt("estado"));
+					ped.setFechaEntrega(rs.getDate("fechapedido"));
+					ped.setFechaEsperada(rs.getDate("fechaesperada"));
+					ped.setFechaPedido(rs.getDate("fechapedido"));
+					Producto prd = new Producto();
+					prd.setNombre(rs.getString("producto"));
+					prd.setCodigo(rs.getLong("codproducto"));
+					ped.setProducto(prd);
+					peds.add(ped);
+					rs.next();
+				}
+				vos.setPedidos(peds);;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		finally{
+			if(statement != null){
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return clientes;
+	}
+	
+	/**
+	 * RFC7. CONSULTAR PROVEEDORES 
+	 * Muestra la información de los proveedores. 
+	 * Esta consulta puede ser filtrada por diferentes conceptos y se espera como resultado: 
+	 * información general, los materiales que provee, los productos que dependen de él, pedidos pendientes, ....
+	 * Esta operación es realizada por el encargado de ProdAndes.
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<ProveedorValue> consultarProveedores() throws Exception{
+		ArrayList<ProveedorValue> proveedores = new ArrayList<ProveedorValue>();
+		PreparedStatement statement = null;
+		
+		String tabla = "(select nommaterial, tipo, MAXIMACANTIDAD, tiempoentrega, login, "
+				+ "codprovee, codmat, tipoidlegal, identificacionlegal, nombrelegal, costo, "
+				+ "cantidadpedida, fechaesperada, fechapedido from (select material.nombre as "
+				+ "nommaterial, tipo, MAXIMACANTIDAD, tiempoentrega, login, proveedor.CODIGO as codprovee, "
+				+ "material.codigo as codmat, tipoidlegal, identificacionlegal, nombrelegal "
+				+ "from material inner join suministro on suministro.CODIGOMATERIAL=material.CODIGO "
+				+ "inner join proveedor on proveedor.CODIGO=suministro.CODIGOPROVEEDOR) "
+				+ "inner join PEDIDOMATERIAL on PEDIDOMATERIAL.CODIGOPROVEEDOR=codprovee) "
+				+ "inner join (select nombre, codprod, codestacion, codigomaterial "
+				+ "from (select nombre, codprod, codigo as codestacion "
+				+ "from (select producto.nombre, producto.codigo as codprod, etapaproduccion.CODIGO as codetapa "
+				+ "from producto inner join etapaproduccion on producto.CODIGO=etapaproduccion.CODIGOPRODUCTO) "
+				+ "inner join ESTACIONPRODUCCION on ESTACIONPRODUCCION.CODIGOETAPA=codetapa) "
+				+ "inner join requiere on requiere.codigoestacion=codestacion) on codmat=codigomaterial ";
+		
+		ArrayList<String> select = new ArrayList<String>();
+		select.add("*");
+		
+		ArrayList<String> where = new ArrayList<String>();
+		
+		ArrayList<String> order = new ArrayList<String>();
+		order.add("codproveedor");
+		order.add("codprod");
+		
+		String selectQuery = generateQuery(select, tabla, where, order, new ArrayList<String>());
+		try{
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			statement = conexion.prepareStatement(selectQuery);
+			ResultSet rs = statement.executeQuery();
+			
+			while(rs.next()){
+				
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		finally{
+			if(statement != null){
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return proveedores;
+	}
+
+		//----------------------------------------------------------
+		// Requerimientos funcionales TODO
+		//----------------------------------------------------------
+	//--------------------------------------------------------------
+	// Generadores TODO
+	//--------------------------------------------------------------
+
+	private String generateQuery(ArrayList<String> select, String tabla, ArrayList<String> where, ArrayList<String> order, ArrayList<String> group){
+		String query = "SELECT ";
+		// Lista los atributos del registro que van a ser seleccionados
+		Iterator<String> iteraSelect = select.iterator();
+		while(iteraSelect.hasNext()){
+			String act = iteraSelect.next();
+			if(iteraSelect.hasNext()){
+				query += act+", ";
+			}
+			else{
+				query += act;
+			}
+		}
+
+		// Indica de que tabla va a sacar los registros
+		query += " FROM "+tabla+" ";
+
+		// Lista las condiciones del por las que se va a seleccionar
+		if(!where.isEmpty()){
+			query += " WHERE ";
+			Iterator<String> iteraWhere = where.iterator();
+			while(iteraWhere.hasNext()){
+				String act = iteraWhere.next();
+				if(iteraWhere.hasNext()){
+					query += act+"AND ";
+				}
+				else{
+					query += act;
+				}
+			}
+		}
+
+		// Lista por que atributos se va a agrupar
+		if(!group.isEmpty()){
+			query += " GROUP BY ";
+			Iterator<String> iteraGroup = group.iterator();
+			while(iteraGroup.hasNext()){
+				String act = iteraGroup.next();
+				if(iteraGroup.hasNext()){
+					query += act+", ";
+				}
+				else{
+					query += act;
+				}
+			}
+		}
+
+		// Lista por que atributos se ordenara
+		if(!where.isEmpty()){
+			query += " ORDER BY ";
+			Iterator<String> iteraOrder = order.iterator();
+			while(iteraOrder.hasNext()){
+				String act = iteraOrder.next();
+				if(iteraOrder.hasNext()){
+					query += act+", ";
+				}
+				else{
+					query += act;
+				}
+			}
+		}
+		return query;
+	}
+
+	//FIXME
+	private String generateUpdate(){
+		return "";
+	}
+
+	//FIXME
+	private String generateInsert(){
+		return "";
+	}
+
+	//FIXME
+	private String generateDelete(){
+		return "";
 	}
 }

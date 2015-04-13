@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import co.edu.uniandes.prodAndes.dao.ConsultaDAO;
 import co.edu.uniandes.prodAndes.vos.Administrador;
 import co.edu.uniandes.prodAndes.vos.Cliente;
+import co.edu.uniandes.prodAndes.vos.EtapaProduccion;
 import co.edu.uniandes.prodAndes.vos.Material;
 import co.edu.uniandes.prodAndes.vos.Operario;
 import co.edu.uniandes.prodAndes.vos.Producto;
@@ -304,5 +305,20 @@ public class ProdAndes
 		dao.registrarUsuario(login, direccionElectronica, pass, idcli, selTipoId, ciudad, nacionalidad, departamento, direccionFisica, telefno, codPostal);
 		int codigoProv = dao.registrarProveedor(login, direccionElectronica, nombrelegal, id, tipoIdLegal, cantidad, selMate, tiempo);
 		dao.registrarMaterialProvisto(codigoProv,selMate, cantidad, tiempo);
+	}
+
+	public void registrarMaterial(String nombre, String unidad,
+			String cantidad, String tipo) throws Exception {
+		dao.registrarMaterial(nombre, unidad, cantidad, tipo);		
+	}
+
+	public void registrarEstacion(String nombre, String etapa, String cantidad,
+			String tiempo) throws Exception{
+		dao.registrarEstacion(nombre, etapa, cantidad, tiempo);
+	}
+
+	public ArrayList<EtapaProduccion> consultarTodasLAsEtapas() throws Exception {
+		return dao.consultarTodasLasEtapas();
+		
 	}
 }

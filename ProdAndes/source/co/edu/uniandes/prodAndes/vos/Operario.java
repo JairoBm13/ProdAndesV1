@@ -66,6 +66,11 @@ public class Operario extends Usuario
 	public void setAdministrador(Administrador administrador) {
 		this.administrador = administrador;
 	}
+
+	public boolean isGerente() {
+		// TODO Auto-generated method stub
+		return cargo.equals("Gerente");
+	}
 	
 	
 	
