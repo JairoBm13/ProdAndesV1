@@ -1878,6 +1878,17 @@ public class ConsultaDAO {
 		}
 		return proveedores;
 	}
+	
+	
+//	public boolean cambiarEstadoEstacionProduccion(String idEstacionProduccion)
+//	{
+//		ArrayList<String> where = new ArrayList<String>();
+//		where.add("ESTACIONPRODUCCION.CODIGO="+idEstacionProduccion);
+//		ArrayList<String> select = new ArrayList<String>();
+//		select.add("CODIGO");
+//		select.add("CODIGO");
+//		String selectQuery = generateQuery(select, "ESTACIONPRODUCCION", where, new ArrayList<String>(), new ArrayList<String>());
+//	}
 
 		//----------------------------------------------------------
 		// Requerimientos funcionales TODO
@@ -1950,14 +1961,89 @@ public class ConsultaDAO {
 		return query;
 	}
 
-	//FIXME
-	private String generateUpdate(){
-		return "";
+
+	private String generateUpdate(String tabla, ArrayList<String> columns, ArrayList<String> values , ArrayList<String> where){
+		String query = "UPDATE ";
+		
+		// Indica de que tabla que se va a actualizar
+		query += tabla+" SET ";
+				
+			
+		
+		// Lista los atributos del registro que van a ser seleccionados
+		Iterator<String> iteraColumns = columns.iterator();
+		Iterator<String> iteraValues = values.iterator();
+		while(iteraColumns.hasNext()){
+			while(iteraValues.hasNext())
+			{
+				String col = iteraColumns.next();
+				String val = iteraValues.next();
+				if(iteraColumns.hasNext()&&iteraValues.hasNext()){
+					query += col+" = "+val+", ";
+				}
+				else{
+					query += col+" = "+val;
+				}
+			}
+			
+		}
+
+		
+
+		// Lista las condiciones del por las que se va a actualizar
+		if(!where.isEmpty()){
+			query += " WHERE ";
+			Iterator<String> iteraWhere = where.iterator();
+			while(iteraWhere.hasNext()){
+				String act = iteraWhere.next();
+				if(iteraWhere.hasNext()){
+					query += act+"AND ";
+				}
+				else{
+					query += act;
+				}
+			}
+		}
+
+	
+		return query;
 	}
 
-	//FIXME
-	private String generateInsert(){
-		return "";
+
+	private String generateInsert(String tabla, ArrayList<String> columns, ArrayList<String> values){
+		String query = "INSERT INTO ";
+		
+		// Indica de que tabla que se va a insertar
+		query += tabla+" ( ";
+				
+			
+		// Lista las columnas en las que se va a insertar
+		Iterator<String> iteraColumns = columns.iterator();
+		while(iteraColumns.hasNext()){
+			String act = iteraColumns.next();
+			if(iteraColumns.hasNext()){
+				query += act+", ";
+			}
+			else{
+				query += act+" ) ";
+			}
+		}
+		
+		// Lista los atributos que se van a insertar
+		query += " VALUES ( ";
+		
+		Iterator<String> iteraValues = values.iterator();
+		while(iteraValues.hasNext()){
+			String act = iteraValues.next();
+			if(iteraValues.hasNext()){
+				query += act+", ";
+			}
+			else{
+				query += act+" ) ";
+			}
+		}
+
+		return query;
 	}
 
 	//FIXME

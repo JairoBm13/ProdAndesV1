@@ -10,6 +10,8 @@ public class EstacionProduccion {
 	
 	private long tiempo;
 	
+	private long numEtapaProduccion;
+	
 	private ArrayList<Operario> operarios;
 	
 	private EtapaProduccion etapaProduccion;
@@ -69,6 +71,15 @@ public class EstacionProduccion {
 	public void setRequiere(ArrayList<EstacionProduccion> requiere) {
 		this.requiere = requiere;
 	}
+
+	public long getNumEtapaProduccion() {
+		return numEtapaProduccion;
+	}
+
+	public void setNumEtapaProduccion(long numEtapaProduccion) {
+		this.numEtapaProduccion = numEtapaProduccion;
+	}
+	
 	
 	
 }
