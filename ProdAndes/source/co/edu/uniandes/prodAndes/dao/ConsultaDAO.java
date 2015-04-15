@@ -2312,5 +2312,3 @@ public class ConsultaDAO {
 		return "";
 	}
 }
-	
-}
