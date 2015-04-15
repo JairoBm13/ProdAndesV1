@@ -1765,7 +1765,7 @@ public class ConsultaDAO {
 		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}
 		else if(cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad < "+cantidadMaxima);}
 		
-		if(!fechaMinima.isEmpty() && !fechaMaxima.isEmpty()){where.add("fechapedido between TO_DATE('"+fechaMinima+"', 'DD-MM-YYYY') and TO_DATE('"+fechaMax+"', 'DD-MM-YYYY')");}
+		if(!fechaMinima.isEmpty() && !fechaMaxima.isEmpty()){where.add("fechapedido between TO_DATE('"+fechaMinima+"', 'DD-MM-YYYY') and TO_DATE('"+fechaMaxima+"', 'DD-MM-YYYY')");}
 		else if(!fechaMinima.isEmpty() && fechaMaxima.isEmpty()){where.add("fechapedido > TO_DATE('"+fechaMinima+"', 'DD-MM-YYYY')");}
 		else if(fechaMinima.isEmpty() && !fechaMaxima.isEmpty()){where.add("fechapedido < TO_DATE('"+fechaMaxima+"', 'DD-MM-YYYY')");}
 		
