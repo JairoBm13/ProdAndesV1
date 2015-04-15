@@ -10,11 +10,21 @@ public class EstacionProduccion {
 	
 	private long tiempo;
 	
+	private long numEtapaProduccion;
+	
 	private ArrayList<Operario> operarios;
 	
 	private EtapaProduccion etapaProduccion;
 	
 	private ArrayList<EstacionProduccion> requiere;
+	
+	private long codigoEtapaActual;
+	
+	private String estado;
+	
+	public static String ESTADO_ACTIVO = "Activa";
+	
+	public static String ESTADO_INACTIVO = "Activa";
 	
 	public EstacionProduccion()
 	{
@@ -69,6 +79,28 @@ public class EstacionProduccion {
 	public void setRequiere(ArrayList<EstacionProduccion> requiere) {
 		this.requiere = requiere;
 	}
-	
-	
+
+	public long getNumEtapaProduccion() {
+		return numEtapaProduccion;
+	}
+
+	public void setNumEtapaProduccion(long numEtapaProduccion) {
+		this.numEtapaProduccion = numEtapaProduccion;
+	}
+
+	public long getCodigoEtapaActual() {
+		return codigoEtapaActual;
+	}
+
+	public void setCodigoEtapaActual(long codigoEtapaActual) {
+		this.codigoEtapaActual = codigoEtapaActual;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}	
 }

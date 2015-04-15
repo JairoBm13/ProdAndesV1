@@ -13,8 +13,10 @@ package co.edu.uniandes.prodAndes.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import co.edu.uniandes.prodAndes.vos.Administrador;
 import co.edu.uniandes.prodAndes.vos.Cliente;
+import co.edu.uniandes.prodAndes.vos.EstacionProduccion;
 import co.edu.uniandes.prodAndes.vos.EstadoPedidoValue;
 import co.edu.uniandes.prodAndes.vos.EtapaProduccion;
 import co.edu.uniandes.prodAndes.vos.Material;
@@ -1635,15 +1637,15 @@ public class ConsultaDAO {
 
 		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad between "+cantidadMinima+" and "+cantidadMaxima);}
 		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}
-		else{where.add("cantidad < "+cantidadMaxima);}
+		else if(cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad < "+cantidadMaxima);}
 
 		if(!fechaMin.isEmpty() && !fechaMax.isEmpty()){where.add("fechapedido between TO_DATE('"+fechaMin+"', 'DD-MM-YYYY') and TO_DATE('"+fechaMax+"', 'DD-MM-YYYY')");}
 		else if(!fechaMin.isEmpty() && fechaMax.isEmpty()){where.add("fechapedido > TO_DATE('"+fechaMin+"', 'DD-MM-YYYY')");}
-		else{where.add("fechapedido < TO_DATE('"+fechaMin+"', 'DD-MM-YYYY')");}
+		else if(fechaMin.isEmpty() && !fechaMax.isEmpty()){where.add("fechapedido < TO_DATE('"+fechaMin+"', 'DD-MM-YYYY')");}
 
-		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("costopedido between "+costoMin+" and "+costoMax);}
-		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("costopedido > "+costoMin);}
-		else{where.add("costopedido < "+costoMax);}
+		if(!costoMin.isEmpty() && !costoMax.isEmpty()){where.add("costopedido between "+costoMin+" and "+costoMax);}
+		else if(!costoMin.isEmpty() && costoMax.isEmpty()){where.add("costopedido > "+costoMin);}
+		else if(costoMin.isEmpty() && !costoMax.isEmpty()){where.add("costopedido < "+costoMax);}
 		
 		ArrayList<String> order = new ArrayList<String>();
 		order.add("codigopedido");
@@ -1723,7 +1725,7 @@ public class ConsultaDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<Cliente> consultarClientes() throws Exception{
+	public ArrayList<Cliente> consultarClientes(String producto, String estado, String cantidadMinima, String cantidadMaxima, String fechaMinima, String fechaMaxima ) throws Exception{
 		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
 		PreparedStatement statement = null;
 		String tabla = "pedido inner join cliente on cliente.codigo=pedido.codigocliente "
@@ -1744,20 +1746,32 @@ public class ConsultaDAO {
 		select.add("fechapedido");
 		select.add("fechaesperada");
 		select.add("fechaentrega");
-		select.add("pedido.codigo as codproducto");
+		select.add("pedido.codigo as codpedido");
 		select.add("estado");
 		select.add("registrosinv");
 		select.add("nombrelegal");
 		select.add("tipoidlegal");
-		select.add("producto");
+		select.add("producto.codigo as codproducto");
+		select.add("producto.nombre as producto");
 		select.add("pedido.cantidad");
-		select.add("cliente.codigo as codigocliente");
 		select.add("cliente.idlegal");
 		select.add("nacionalidad");
+		select.add("cliente.codigo as codcliente");
 		
 		ArrayList<String> where = new ArrayList<String>();
+		if(producto.isEmpty()){where.add("producto='"+producto+"'");}
+		
+		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad between "+cantidadMinima+" and "+cantidadMaxima);}
+		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}
+		else if(cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad < "+cantidadMaxima);}
+		
+		if(!fechaMinima.isEmpty() && !fechaMaxima.isEmpty()){where.add("fechapedido between TO_DATE('"+fechaMinima+"', 'DD-MM-YYYY') and TO_DATE('"+fechaMax+"', 'DD-MM-YYYY')");}
+		else if(!fechaMinima.isEmpty() && fechaMaxima.isEmpty()){where.add("fechapedido > TO_DATE('"+fechaMinima+"', 'DD-MM-YYYY')");}
+		else if(fechaMinima.isEmpty() && !fechaMaxima.isEmpty()){where.add("fechapedido < TO_DATE('"+fechaMaxima+"', 'DD-MM-YYYY')");}
+		
 		ArrayList<String> order = new ArrayList<String>();
 		order.add("cliente.codigo");
+		
 		String selectQuery = generateQuery(select, tabla, where, order, new ArrayList<String>());
 		try{
 			establecerConexion(cadenaConexion, usuario, clave);
@@ -1882,6 +1896,192 @@ public class ConsultaDAO {
 		//----------------------------------------------------------
 		// Requerimientos funcionales TODO
 		//----------------------------------------------------------
+	
+	public boolean cambiarEstadoEstacionProduccion(String idEstacionProduccion) throws Exception 
+	{
+		boolean funciono = false;
+		
+		ArrayList<String> where = new ArrayList<String>();
+		where.add("ESTACIONPRODUCCION.CODIGO="+idEstacionProduccion);
+		ArrayList<String> select = new ArrayList<String>();
+		select.add("CODIGO");
+		select.add("CODIGOETAPA");
+		select.add("ESTADO");
+		String selectQuery = generateQueryForUpdate(select, "ESTACIONPRODUCCION", where, new ArrayList<String>(), new ArrayList<String>());
+		PreparedStatement statement = null;
+		EstacionProduccion estacionPrincipal = new EstacionProduccion();
+		
+		try {
+			
+			//Obtiene la estacion
+			
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			statement = conexion.prepareStatement(selectQuery);
+			
+			ResultSet rs = statement.executeQuery();
+
+			while(rs.next()){
+				estacionPrincipal.setCodigo(rs.getLong("CODIGO"));
+				estacionPrincipal.setEstado(rs.getString("ESTADO"));
+				estacionPrincipal.setCodigoEtapaActual(rs.getLong("CODIGOETAPA"));
+			}
+			
+			//Se valida el estado y dependiendo de eso se elege que accion tomar
+			
+			if(estacionPrincipal.getEstado().equals(EstacionProduccion.ESTADO_ACTIVO))
+			{
+				//EN caso en que este activo y se desee desactivar la estacion de produccion
+				
+				//Toma todas las etapas de produccion que hay que reasignar
+				select = new ArrayList<String>();
+				where = new ArrayList<String>();
+				select.add("CODIGO");
+				where.add("ETAPAPRODUCCION.CODIGO="+estacionPrincipal.getCodigoEtapaActual()+" OR ETAPAPRODUCCION.ENESPERADE="+estacionPrincipal.getCodigo());
+				
+				String etapaProduccionEnEspera = generateQueryForUpdate(select, "ETAPAPRODUCCION", where, new ArrayList<String>(), new ArrayList<String>());
+				
+				statement.close();
+				statement = conexion.prepareStatement(etapaProduccionEnEspera);
+				ResultSet rs1 = statement.executeQuery();
+				
+				ArrayList<EtapaProduccion> etapas = new ArrayList<EtapaProduccion>();
+				while(rs1.next())
+				{
+					EtapaProduccion ep = new EtapaProduccion();
+					ep.setCodigo(rs1.getLong("CODIGO"));
+					etapas.add(ep);
+				}
+				
+				//Toma todas las otras estaciones de produccion que estan activas en orden 
+				//descendente segun el numero de etapas que tengan asignaddos
+				
+				select = new ArrayList<String>();
+				where = new ArrayList<String>();
+				ArrayList<String> group = new ArrayList<String>();
+				ArrayList<String> order = new ArrayList<String>();
+				select.add("ESTACIONPRODUCCION.CODIGO");
+				select.add("COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA ");
+				where.add("ESTACIONPRODUCCION.ESTADO='"+EstacionProduccion.ESTADO_ACTIVO+"'");
+				where.add("ESTACIONPRODUCCION.CODIGO != "+estacionPrincipal.getCodigo());
+				group.add("ESTACIONPRODUCCION.CODIGO");
+				order.add("CUENTA ASC");
+				String tablaOtrasEstaciones = "ESTACIONPRODUCCION JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE";
+				
+				String estacionesDeProduccionOpcionales = generateQueryForUpdate(select, tablaOtrasEstaciones, where, order, group);
+				
+				statement.close();
+				statement = conexion.prepareStatement(estacionesDeProduccionOpcionales);
+				ResultSet rs2 = statement.executeQuery();
+				ArrayList<EstacionProduccion> estacionesOpcionalesOrdenadas = new ArrayList<EstacionProduccion>();
+				
+				while(rs2.next())
+				{
+					EstacionProduccion est = new EstacionProduccion();
+					est.setCodigo(rs.getLong("ESTACIONPRODUCCION.CODIGO"));
+					est.setNumEtapaProduccion(rs.getLong("CUENTA"));
+					estacionesOpcionalesOrdenadas.add(est);
+				}
+				
+				//Verifica que exista alguna extación, si no, cierra la conexión y retorna false
+				
+				
+				
+				
+				//Reasigna las etapas de producción según el balanceo
+				
+				int contadorEstacion = 0;
+				
+				for(int i=0;i<etapas.size();i++)
+				{
+					EstacionProduccion est = estacionesOpcionalesOrdenadas.get(contadorEstacion);
+					est.setNumEtapaProduccion(est.getNumEtapaProduccion()+1);
+					ArrayList<String> columns = new ArrayList<String>();
+					ArrayList<String> values = new ArrayList<String>();
+					where = new ArrayList<String>();
+					columns.add("ENESPERADE");
+					values.add(est.getCodigo()+"");
+					where.add("ETAPAPRODUCCION.CODIGO="+etapas.get(i).getCodigo());
+					String agregaEtapa = generateUpdate("ETAPAPRODUCCION", columns, values, where);
+					
+					statement.close();
+					statement = conexion.prepareStatement(agregaEtapa);
+					statement.executeUpdate();
+					
+					if(contadorEstacion<estacionesOpcionalesOrdenadas.size()-1)
+					{
+						if(est.getNumEtapaProduccion()>estacionesOpcionalesOrdenadas.get(contadorEstacion+1).getNumEtapaProduccion())
+							contadorEstacion++;
+					}
+					
+				}
+				
+				
+				//Actualiza el estado de la estacion de produccion a inactivo
+				
+				
+				ArrayList<String> columns = new ArrayList<String>();
+				ArrayList<String> values = new ArrayList<String>();
+				where = new ArrayList<String>();
+				columns.add("ESTADO");
+				columns.add("CODIGOETAPA");
+				values.add("'"+EstacionProduccion.ESTADO_INACTIVO+"'");
+				values.add("NULL");
+				where.add("ESTACIONPRODUCCION.CODIGO="+estacionPrincipal.getCodigo());
+				String actualizarEstacion = generateUpdate("ESTACIONPRODUCCION", columns, values, where);
+				statement.close();
+				statement = conexion.prepareStatement(actualizarEstacion);
+				statement.executeUpdate();
+				
+				funciono=true;
+			}
+			else
+			{
+				//TODO
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			
+			try {
+				conexion.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				statement.close();
+				closeConnection(conexion);
+				throw new Exception ("No pudo hacer rollback");
+			}
+		}
+		finally
+		{
+			if(funciono)
+			{
+				conexion.commit();
+				statement.close();
+				closeConnection(conexion);		
+				System.out.println("Funciono!!!!!!");
+
+			}
+			else
+			{
+				try {
+					conexion.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					statement.close();
+					closeConnection(conexion);
+					throw new Exception ("No pudo hacer rollback");
+				}
+			}
+		}
+		
+		statement.close();
+		closeConnection(conexion);
+		return funciono;
+		
+	}
+
 	//--------------------------------------------------------------
 	// Generadores TODO
 	//--------------------------------------------------------------
@@ -1950,18 +2150,167 @@ public class ConsultaDAO {
 		return query;
 	}
 
-	//FIXME
-	private String generateUpdate(){
-		return "";
+	
+	private String generateQueryForUpdate(ArrayList<String> select, String tabla, ArrayList<String> where, ArrayList<String> order, ArrayList<String> group){
+		String query = "SELECT ";
+		// Lista los atributos del registro que van a ser seleccionados
+		Iterator<String> iteraSelect = select.iterator();
+		while(iteraSelect.hasNext()){
+			String act = iteraSelect.next();
+			if(iteraSelect.hasNext()){
+				query += act+", ";
+			}
+			else{
+				query += act;
+			}
+		}
+
+		// Indica de que tabla va a sacar los registros
+		query += " FROM "+tabla+" ";
+
+		// Lista las condiciones del por las que se va a seleccionar
+		if(!where.isEmpty()){
+			query += " WHERE ";
+			Iterator<String> iteraWhere = where.iterator();
+			while(iteraWhere.hasNext()){
+				String act = iteraWhere.next();
+				if(iteraWhere.hasNext()){
+					query += act+"AND ";
+				}
+				else{
+					query += act;
+				}
+			}
+		}
+		
+		
+
+		// Lista por que atributos se va a agrupar
+		if(!group.isEmpty()){
+			query += " GROUP BY ";
+			Iterator<String> iteraGroup = group.iterator();
+			while(iteraGroup.hasNext()){
+				String act = iteraGroup.next();
+				if(iteraGroup.hasNext()){
+					query += act+", ";
+				}
+				else{
+					query += act;
+				}
+			}
+		}
+
+		// Lista por que atributos se ordenara
+		if(!where.isEmpty()){
+			query += " ORDER BY ";
+			Iterator<String> iteraOrder = order.iterator();
+			while(iteraOrder.hasNext()){
+				String act = iteraOrder.next();
+				if(iteraOrder.hasNext()){
+					query += act+", ";
+				}
+				else{
+					query += act;
+				}
+			}
+		}
+		
+		//Indica que es para actualizar
+		
+		query += " FOR UPDATE";
+		
+		return query;
 	}
 
-	//FIXME
-	private String generateInsert(){
-		return "";
+
+	private String generateUpdate(String tabla, ArrayList<String> columns, ArrayList<String> values , ArrayList<String> where){
+		String query = "UPDATE ";
+		
+		// Indica de que tabla que se va a actualizar
+		query += tabla+" SET ";
+				
+			
+		
+		// Lista los atributos del registro que van a ser seleccionados
+		Iterator<String> iteraColumns = columns.iterator();
+		Iterator<String> iteraValues = values.iterator();
+		while(iteraColumns.hasNext()){
+			while(iteraValues.hasNext())
+			{
+				String col = iteraColumns.next();
+				String val = iteraValues.next();
+				if(iteraColumns.hasNext()&&iteraValues.hasNext()){
+					query += col+" = "+val+", ";
+				}
+				else{
+					query += col+" = "+val;
+				}
+			}
+			
+		}
+
+		
+
+		// Lista las condiciones del por las que se va a actualizar
+		if(!where.isEmpty()){
+			query += " WHERE ";
+			Iterator<String> iteraWhere = where.iterator();
+			while(iteraWhere.hasNext()){
+				String act = iteraWhere.next();
+				if(iteraWhere.hasNext()){
+					query += act+"AND ";
+				}
+				else{
+					query += act;
+				}
+			}
+		}
+
+	
+		return query;
+	}
+
+
+	private String generateInsert(String tabla, ArrayList<String> columns, ArrayList<String> values){
+		String query = "INSERT INTO ";
+		
+		// Indica de que tabla que se va a insertar
+		query += tabla+" ( ";
+				
+			
+		// Lista las columnas en las que se va a insertar
+		Iterator<String> iteraColumns = columns.iterator();
+		while(iteraColumns.hasNext()){
+			String act = iteraColumns.next();
+			if(iteraColumns.hasNext()){
+				query += act+", ";
+			}
+			else{
+				query += act+" ) ";
+			}
+		}
+		
+		// Lista los atributos que se van a insertar
+		query += " VALUES ( ";
+		
+		Iterator<String> iteraValues = values.iterator();
+		while(iteraValues.hasNext()){
+			String act = iteraValues.next();
+			if(iteraValues.hasNext()){
+				query += act+", ";
+			}
+			else{
+				query += act+" ) ";
+			}
+		}
+
+		return query;
 	}
 
 	//FIXME
 	private String generateDelete(){
 		return "";
 	}
+}
+	
 }
