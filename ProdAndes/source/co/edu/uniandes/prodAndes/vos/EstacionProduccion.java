@@ -18,6 +18,14 @@ public class EstacionProduccion {
 	
 	private ArrayList<EstacionProduccion> requiere;
 	
+	private long codigoEtapaActual;
+	
+	private String estado;
+	
+	public static String ESTADO_ACTIVO = "Activa";
+	
+	public static String ESTADO_INACTIVO = "Activa";
+	
 	public EstacionProduccion()
 	{
 		operarios = new ArrayList<Operario>();
@@ -79,6 +87,25 @@ public class EstacionProduccion {
 	public void setNumEtapaProduccion(long numEtapaProduccion) {
 		this.numEtapaProduccion = numEtapaProduccion;
 	}
+
+	public long getCodigoEtapaActual() {
+		return codigoEtapaActual;
+	}
+
+	public void setCodigoEtapaActual(long codigoEtapaActual) {
+		this.codigoEtapaActual = codigoEtapaActual;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+
+	
 	
 	
 	
