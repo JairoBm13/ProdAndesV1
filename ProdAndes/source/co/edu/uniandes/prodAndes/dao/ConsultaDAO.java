@@ -1954,7 +1954,7 @@ public class ConsultaDAO {
 				}
 				
 				//Toma todas las otras estaciones de produccion que estan activas en orden 
-				//descendente segun el numero de etapas que tengan asignaddos
+				//ascendente segun el numero de etapas que tengan asignaddos
 				
 				select = new ArrayList<String>();
 				where = new ArrayList<String>();
@@ -1985,7 +1985,12 @@ public class ConsultaDAO {
 				
 				//Verifica que exista alguna extación, si no, cierra la conexión y retorna false
 				
-				
+				if(estacionesOpcionalesOrdenadas.size()==0)
+				{
+					statement.close();
+					closeConnection(conexion);
+					return funciono;
+				}
 				
 				
 				//Reasigna las etapas de producción según el balanceo
@@ -2037,7 +2042,106 @@ public class ConsultaDAO {
 			}
 			else
 			{
-				//TODO
+				//EN caso en que este inactivo y se desee activar la estacion de produccion
+				
+				//Toma todas las otras estaciones de produccion que estan activas en orden 
+				//descendente segun el numero de etapas que tengan asignaddos
+				
+				select = new ArrayList<String>();
+				where = new ArrayList<String>();
+				ArrayList<String> group = new ArrayList<String>();
+				ArrayList<String> order = new ArrayList<String>();
+				select.add("ESTACIONPRODUCCION.CODIGO");
+				select.add("COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA ");
+				where.add("ESTACIONPRODUCCION.ESTADO='"+EstacionProduccion.ESTADO_ACTIVO+"'");
+				where.add("ESTACIONPRODUCCION.CODIGO != "+estacionPrincipal.getCodigo());
+				group.add("ESTACIONPRODUCCION.CODIGO");
+				order.add("CUENTA DESC");
+				String tablaOtrasEstaciones = "ESTACIONPRODUCCION JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE";
+				
+				String estacionesDeProduccionOpcionales = generateQueryForUpdate(select, tablaOtrasEstaciones, where, order, group);
+				
+				statement.close();
+				statement = conexion.prepareStatement(estacionesDeProduccionOpcionales);
+				ResultSet rs2 = statement.executeQuery();
+				ArrayList<EstacionProduccion> estacionesOpcionalesOrdenadas = new ArrayList<EstacionProduccion>();
+				
+				while(rs2.next())
+				{
+					EstacionProduccion est = new EstacionProduccion();
+					est.setCodigo(rs.getLong("ESTACIONPRODUCCION.CODIGO"));
+					est.setNumEtapaProduccion(rs.getLong("CUENTA"));
+					estacionesOpcionalesOrdenadas.add(est);
+				}
+				
+				//Obtiene el promedio de las estaciones
+				
+				Long avg = (long) 0;
+				for(int i=0;i<estacionesOpcionalesOrdenadas.size();i++)
+					avg+=estacionesOpcionalesOrdenadas.get(i).getNumEtapaProduccion();
+				avg = avg / estacionesOpcionalesOrdenadas.size();
+				
+				
+				//Cambia las etapas de producción según el balanceo deceado
+				long contador = (long) 0;
+				int contadorEstacion = 0;
+				while(contador<avg&&contadorEstacion<estacionesOpcionalesOrdenadas.size())
+				{
+					EstacionProduccion est = estacionesOpcionalesOrdenadas.get(contadorEstacion);
+					boolean salida = false;
+					//Obtiene todas las etapas asociadas
+					select = new ArrayList<String>();
+					where = new ArrayList<String>();
+					select.add("CODIGO");
+					where.add("ETAPAPRODUCCION.ENESPERADE="+est.getCodigo());
+					
+					String etapaProduccionEnEspera = generateQueryForUpdate(select, "ETAPAPRODUCCION", where, new ArrayList<String>(), new ArrayList<String>());
+					
+					statement.close();
+					statement = conexion.prepareStatement(etapaProduccionEnEspera);
+					ResultSet rs1 = statement.executeQuery();
+					
+					//ArrayList<EtapaProduccion> etapas = new ArrayList<EtapaProduccion>();
+					//Itera en las etapas hasta lograr el balanceo
+					while(rs1.next()&&est.getNumEtapaProduccion()>0&&contador<avg&&!salida)
+					{
+						EtapaProduccion ep = new EtapaProduccion();
+						ep.setCodigo(rs1.getLong("CODIGO"));
+						
+						//Actualiza la nueva etapa de produccion
+						
+						ArrayList<String> columns = new ArrayList<String>();
+						ArrayList<String> values = new ArrayList<String>();
+						where = new ArrayList<String>();
+						columns.add("ENESPERADE");
+						values.add(estacionPrincipal.getCodigo()+"");
+						where.add("ETAPAPRODUCCION.CODIGO="+est.getCodigo());
+						String agregaEtapa = generateUpdate("ETAPAPRODUCCION", columns, values, where);
+						
+						statement.close();
+						statement = conexion.prepareStatement(agregaEtapa);
+						statement.executeUpdate();
+						
+						//actializa indices y contadores
+						est.setNumEtapaProduccion(est.getNumEtapaProduccion()-1);
+						contador++;
+						
+						if(contadorEstacion<estacionesOpcionalesOrdenadas.size()-1)
+						{
+							if(est.getNumEtapaProduccion()<estacionesOpcionalesOrdenadas.get(contadorEstacion+1).getNumEtapaProduccion())
+							{	
+								contadorEstacion++;
+								salida=true;
+							}
+						}
+					}
+					
+					//Finaliza el proceso
+					
+					
+					funciono=true;
+					
+				}
 			}
 			
 			
