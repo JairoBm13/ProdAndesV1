@@ -24,7 +24,7 @@ public class EstacionProduccion {
 	
 	public static String ESTADO_ACTIVO = "Activa";
 	
-	public static String ESTADO_INACTIVO = "Activa";
+	public static String ESTADO_INACTIVO = "Inactiva";
 	
 	public EstacionProduccion()
 	{

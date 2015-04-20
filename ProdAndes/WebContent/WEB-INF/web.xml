@@ -37,6 +37,10 @@
   <servlet-name>ServletRegistroMaterial</servlet-name>
   <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletRegistroMaterial</servlet-class>
  </servlet>
+ <servlet>
+  <servlet-name>ServletPrueba</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletPrueba</servlet-class>
+ </servlet>
  <servlet-mapping>
   <servlet-name>ServletConsultasGenerales</servlet-name>
   <url-pattern>/consultaGeneral.html</url-pattern>
@@ -68,5 +72,9 @@
  <servlet-mapping>
   <servlet-name>ServletRegistroMaterial</servlet-name>
   <url-pattern>/registroMaterial.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletPrueba</servlet-name>
+  <url-pattern>/prueba.html</url-pattern>
  </servlet-mapping>
 </web-app>
