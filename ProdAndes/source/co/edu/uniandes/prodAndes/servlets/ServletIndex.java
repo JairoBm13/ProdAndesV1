@@ -36,6 +36,14 @@ public class ServletIndex extends ServletTemplate {
 		
 		PrintWriter respuesta = response.getWriter( );
 		respuesta.println("<P><a href=\"login.html\">login</p>");
+//		respuesta.println("<form action=\"prueba.html\">");
+//		respuesta.println("<select id=\"cosas\" name=\"cosas\" multiple>");
+//		respuesta.println("<option value=\"cosa1\">cosa1</option>");
+//		respuesta.println("<option value=\"cosa2\">cosa2</option>");
+//		respuesta.println("</select>");
+//		respuesta.println("<input type=\"submit\" value=\"enviar\">");
+//		respuesta.println("</form>");
+		
 
 	}
 

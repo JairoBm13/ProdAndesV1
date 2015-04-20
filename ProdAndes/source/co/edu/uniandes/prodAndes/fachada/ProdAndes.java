@@ -21,15 +21,15 @@ import co.edu.uniandes.prodAndes.vos.Usuario;
  */
 public class ProdAndes 
 {
-	
+
 	private final static String ADMIN="sysadmin";
 	/**
 	 * Conexión con la clase que maneja la base de datos
 	 */
 	private ConsultaDAO dao;
-	
+
 	private int tipoUsuario;
-	
+
 	/**
 	 * @return the tipoUsuario
 	 */
@@ -101,36 +101,36 @@ public class ProdAndes
 	}
 
 	private Administrador adminVal;
-	
+
 	private Cliente clienteVal;
-	
+
 	private Proveedor proveedorVal;
-	
+
 	private Operario operarioVal;
-    
-    // -----------------------------------------------------------------
-    // Singleton
-    // -----------------------------------------------------------------
+
+	// -----------------------------------------------------------------
+	// Singleton
+	// -----------------------------------------------------------------
 
 
-    /**
-     * Instancia única de la clase
-     */
-    private static ProdAndes instancia;
-    
-    /**
-     * Devuelve la instancia única de la clase
-     * @return Instancia única de la clase
-     */
-    public static ProdAndes darInstancia( )
-    {
-        if( instancia == null )
-        {
-            instancia = new ProdAndes( );
-        }
-        return instancia;
-    }
-	
+	/**
+	 * Instancia única de la clase
+	 */
+	private static ProdAndes instancia;
+
+	/**
+	 * Devuelve la instancia única de la clase
+	 * @return Instancia única de la clase
+	 */
+	public static ProdAndes darInstancia( )
+	{
+		if( instancia == null )
+		{
+			instancia = new ProdAndes( );
+		}
+		return instancia;
+	}
+
 	/**
 	 * contructor de la clase. Inicializa el atributo dao.
 	 */
@@ -139,7 +139,7 @@ public class ProdAndes
 		dao = new ConsultaDAO();
 		tipoUsuario = 0;
 	}
-	
+
 	/**
 	 * inicializa el dao, dándole la ruta en donde debe encontrar
 	 * el archivo properties.
@@ -149,11 +149,11 @@ public class ProdAndes
 	{
 		dao.inicializar(ruta);
 	}
-	
+
 	// ---------------------------------------------------
-    // Métodos asociados autenticación
-    // ---------------------------------------------------
-	
+	// Métodos asociados autenticación
+	// ---------------------------------------------------
+
 	/**
 	 * 
 	 * @param usu
@@ -161,103 +161,103 @@ public class ProdAndes
 	 * @param contrasenia
 	 * @return
 	 */
-    public boolean login(String usu, String correo, String contrasenia){
-    	Object usuario = null;
-    	try {
+	public boolean login(String usu, String correo, String contrasenia){
+		Object usuario = null;
+		try {
 			usuario = dao.inicioSesion(usu, correo, contrasenia);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    	
-    	if(usuario==null) return false;
-    	else if(usuario.getClass().getSimpleName().equals("Administrador")){
-    		tipoUsuario=1;
-    		adminVal = (Administrador) usuario;
-    	}
-    	else if(usuario.getClass().getSimpleName().equals("Proveedor")){
-    		tipoUsuario=2;
-    		proveedorVal = (Proveedor) usuario;
-    	}
-    	else if(usuario.getClass().getSimpleName().equals("Cliente")){
-    		tipoUsuario=3;
-    		clienteVal = (Cliente) usuario;
-    	}
-    	else if(usuario.getClass().getSimpleName().equals("Operario")){
-    		tipoUsuario=4;
-    		operarioVal = (Operario) usuario;
-    	}
-    	return true;
-    }
-    
-    /**
-     * 
-     */
-    public void logout(){
+
+		if(usuario==null) return false;
+		else if(usuario.getClass().getSimpleName().equals("Administrador")){
+			tipoUsuario=1;
+			adminVal = (Administrador) usuario;
+		}
+		else if(usuario.getClass().getSimpleName().equals("Proveedor")){
+			tipoUsuario=2;
+			proveedorVal = (Proveedor) usuario;
+		}
+		else if(usuario.getClass().getSimpleName().equals("Cliente")){
+			tipoUsuario=3;
+			clienteVal = (Cliente) usuario;
+		}
+		else if(usuario.getClass().getSimpleName().equals("Operario")){
+			tipoUsuario=4;
+			operarioVal = (Operario) usuario;
+		}
+		return true;
+	}
+
+	/**
+	 * 
+	 */
+	public void logout(){
 		tipoUsuario=0;
 		adminVal=null;
 		clienteVal=null;
 		operarioVal=null;
 		proveedorVal=null;
 	}
-    
-    //-------------------------------------------------------
-    // Metodos asociados al registro de información
-    //-------------------------------------------------------
-	
-    /**
-     * 
-     * @param codigo
-     * @param etapa
-     * @throws Exception
-     */
-    public void registrarEjecucionEtapa(int codigo, int etapa) throws Exception{
-    	dao.registrarEjecucionEtapaDeProduccion(codigo, etapa);
-    }
-    
-    /**
-     * 
-     * @param cantidad
-     * @param codigo
-     * @throws Exception
-     */
-    public void registrarInsumos(double cantidad, int codigo) throws Exception {
-    	dao.registrarLlegadaDeInsumos(cantidad, codigo);
-    }
-    
-    /**
-     * 
-     * @param pedido
-     * @throws Exception
-     */
-    public void registrarPedidoCompletado(String pedido) throws Exception{
-    	dao.registrarEntregaPedido(pedido);
-    }
-    
-    // ---------------------------------------------------
-    // Métodos asociados a los casos de uso: Consulta
-    // ---------------------------------------------------
-    
-    /**
-     * 
-     * @param tipo
-     * @param inventario
-     * @param etapa
-     * @param fechaEntrega
-     * @param fechaSolicitud
-     * @param ordenes
-     * @param grupos
-     * @return
-     * @throws Exception
-     */
-    public ArrayList consultarExistencia(String tipo, String inventario, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception{
-    	return dao.consultarExistenciaDe(tipo, inventario, fechaEntrega, fechaSolicitud, ordenes, grupos);
-    }
-    
-    public ArrayList consultarEtapaProduccion() throws Exception{
-    	return dao.seleccionarTodosLasEtapa();
-    }
-    
-    public ArrayList<Material> darTodosMaterialesCodigoNombreTipo()
+
+	//-------------------------------------------------------
+	// Metodos asociados al registro de información
+	//-------------------------------------------------------
+
+	/**
+	 * 
+	 * @param codigo
+	 * @param etapa
+	 * @throws Exception
+	 */
+	public void registrarEjecucionEtapa(int codigo, int etapa) throws Exception{
+		dao.registrarEjecucionEtapaDeProduccion(codigo, etapa);
+	}
+
+	/**
+	 * 
+	 * @param cantidad
+	 * @param codigo
+	 * @throws Exception
+	 */
+	public void registrarInsumos(double cantidad, int codigo) throws Exception {
+		dao.registrarLlegadaDeInsumos(cantidad, codigo);
+	}
+
+	/**
+	 * 
+	 * @param pedido
+	 * @throws Exception
+	 */
+	public void registrarPedidoCompletado(String pedido) throws Exception{
+		dao.registrarEntregaPedido(pedido);
+	}
+
+	// ---------------------------------------------------
+	// Métodos asociados a los casos de uso: Consulta
+	// ---------------------------------------------------
+
+	/**
+	 * 
+	 * @param tipo
+	 * @param inventario
+	 * @param etapa
+	 * @param fechaEntrega
+	 * @param fechaSolicitud
+	 * @param ordenes
+	 * @param grupos
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList consultarExistencia(String tipo, String inventario, String fechaEntrega, String fechaSolicitud, ArrayList<String> ordenes, ArrayList<String> grupos) throws Exception{
+		return dao.consultarExistenciaDe(tipo, inventario, fechaEntrega, fechaSolicitud, ordenes, grupos);
+	}
+
+	public ArrayList consultarEtapaProduccion() throws Exception{
+		return dao.seleccionarTodosLasEtapa();
+	}
+
+	public ArrayList<Material> darTodosMaterialesCodigoNombreTipo()
 	{
 		try {
 			return dao.darTodosMaterialesCodigoNombreTipo();
@@ -267,7 +267,7 @@ public class ProdAndes
 			return new ArrayList<Material>();
 		}
 	}
-	
+
 	public ArrayList<Producto> darTodosProductosCodigoNombre()
 	{
 		try {
@@ -286,7 +286,7 @@ public class ProdAndes
 			String nombrelegal, String id, String sinv, String tipoIdLegal) throws Exception {
 		dao.registrarUsuario(login, direccionElectronica, pass, idcli, selTipoId, ciudad, nacionalidad, departamento, direccionFisica, telefno, codPostal);
 		dao.registrarCliente(login, direccionElectronica, id, nombrelegal, sinv, tipoIdLegal);
-		
+
 	}
 
 	public void registrarOperario(String login, String pass, String idcli,
@@ -305,7 +305,7 @@ public class ProdAndes
 			String nombrelegal, String id, String tipoIdLegal, String cantidad,
 			String selMate, String tiempo) throws Exception {
 		dao.registrarUsuario(login, direccionElectronica, pass, idcli, selTipoId, ciudad, nacionalidad, departamento, direccionFisica, telefno, codPostal);
-		int codigoProv = dao.registrarProveedor(login, direccionElectronica, nombrelegal, id, tipoIdLegal, cantidad, selMate, tiempo);
+		int codigoProv = dao.registrarProveedor(login, direccionElectronica, nombrelegal, id, tipoIdLegal);
 		dao.registrarMaterialProvisto(codigoProv,selMate, cantidad, tiempo);
 	}
 
@@ -321,51 +321,72 @@ public class ProdAndes
 
 	public ArrayList<EtapaProduccion> consultarTodasLAsEtapas() throws Exception {
 		return dao.consultarTodasLasEtapas();
-		
+
 	}
-	
-	public ArrayList<ProveedorValue> consultarProveedores(String proveedor, String minCantidadEntrega, String maxCantidadEntrega, String minTiempo, String maxTiempo, String producto, String minCosto, String maxCosto, String minCantidad, String maxCantidad)
+
+	/**
+	 * 
+	 * @param proveedor
+	 * @param minCantidadEntrega
+	 * @param maxCantidadEntrega
+	 * @param minTiempo
+	 * @param maxTiempo
+	 * @param producto
+	 * @param minCosto
+	 * @param maxCosto
+	 * @param minCantidad
+	 * @param maxCantidad
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<ProveedorValue> consultarProveedores(String proveedor, String minCantidadEntrega, String maxCantidadEntrega, String minTiempo, String maxTiempo, String producto, String minCosto, String maxCosto, String minCantidad, String maxCantidad) throws Exception
 	{
-		try {
-			return dao.consultarProveedores(proveedor, minCantidadEntrega, maxCantidadEntrega, minTiempo, maxTiempo, producto, minCosto, maxCosto, minCantidad, maxCantidad);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+		return dao.consultarProveedores(proveedor, minCantidadEntrega, maxCantidadEntrega, minTiempo, maxTiempo, producto, minCosto, maxCosto, minCantidad, maxCantidad);
 	}
-	
-	public ArrayList<Cliente> consultarClientes(String producto, String estado, String cantidadMinima, String cantidadMaxima, String fechaMinima, String fechaMaxima )
+
+	/**
+	 * 
+	 * @param producto
+	 * @param estado
+	 * @param cantidadMinima
+	 * @param cantidadMaxima
+	 * @param fechaMinima
+	 * @param fechaMaxima
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<Cliente> consultarClientes(String producto, String estado, String cantidadMinima, String cantidadMaxima, String fechaMinima, String fechaMaxima ) throws Exception
 	{
-		try {
-			return dao.consultarClientes(producto, estado, cantidadMinima, cantidadMaxima, fechaMinima, fechaMaxima);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+		return dao.consultarClientes(producto, estado, cantidadMinima, cantidadMaxima, fechaMinima, fechaMaxima);
 	}
-	
-	public ArrayList<EstadoPedidoValue> consultarEstadoPedidos(String cliente, ArrayList<String> productos, String cantidadMinima, String cantidadMaxima, String costoMin, String costoMax, String fechaMin, String fechaMax, ArrayList<String> materiales)
+
+	/**
+	 * 
+	 * @param cliente
+	 * @param productos
+	 * @param cantidadMinima
+	 * @param cantidadMaxima
+	 * @param costoMin
+	 * @param costoMax
+	 * @param fechaMin
+	 * @param fechaMax
+	 * @param materiales
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<EstadoPedidoValue> consultarEstadoPedidos(String cliente, ArrayList<String> productos, String cantidadMinima, String cantidadMaxima, String costoMin, String costoMax, String fechaMin, String fechaMax, ArrayList<String> materiales) throws Exception
 	{
-		try {
-			return dao.consultarEstadoPedidos(cliente, productos, cantidadMinima, cantidadMaxima, costoMin, costoMax, fechaMin, fechaMax, materiales);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		
+		return dao.consultarEstadoPedidos(cliente, productos, cantidadMinima, cantidadMaxima, costoMin, costoMax, fechaMin, fechaMax, materiales);
 	}
-	
-	public boolean cambiarEstadoEstacionProduccion(String idEstacionProduccion)
+
+	/**
+	 * 
+	 * @param idEstacionProduccion
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean cambiarEstadoEstacionProduccion(String idEstacionProduccion) throws Exception
 	{
-		try {
-			return dao.cambiarEstadoEstacionProduccion(idEstacionProduccion);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
+		return dao.cambiarEstadoEstacionProduccion(idEstacionProduccion);
 	}
 }
