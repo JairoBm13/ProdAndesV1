@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import co.edu.uniandes.prodAndes.dao.ConsultaDAO;
 import co.edu.uniandes.prodAndes.vos.Administrador;
 import co.edu.uniandes.prodAndes.vos.Cliente;
+import co.edu.uniandes.prodAndes.vos.EstadoPedidoValue;
 import co.edu.uniandes.prodAndes.vos.EtapaProduccion;
 import co.edu.uniandes.prodAndes.vos.Material;
 import co.edu.uniandes.prodAndes.vos.Operario;
 import co.edu.uniandes.prodAndes.vos.Producto;
 import co.edu.uniandes.prodAndes.vos.Proveedor;
+import co.edu.uniandes.prodAndes.vos.ProveedorValue;
 import co.edu.uniandes.prodAndes.vos.Usuario;
 
 /**
@@ -320,5 +322,50 @@ public class ProdAndes
 	public ArrayList<EtapaProduccion> consultarTodasLAsEtapas() throws Exception {
 		return dao.consultarTodasLasEtapas();
 		
+	}
+	
+	public ArrayList<ProveedorValue> consultarProveedores(String proveedor, String minCantidadEntrega, String maxCantidadEntrega, String minTiempo, String maxTiempo, String producto, String minCosto, String maxCosto, String minCantidad, String maxCantidad)
+	{
+		try {
+			return dao.consultarProveedores(proveedor, minCantidadEntrega, maxCantidadEntrega, minTiempo, maxTiempo, producto, minCosto, maxCosto, minCantidad, maxCantidad);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ArrayList<Cliente> consultarClientes(String producto, String estado, String cantidadMinima, String cantidadMaxima, String fechaMinima, String fechaMaxima )
+	{
+		try {
+			return dao.consultarClientes(producto, estado, cantidadMinima, cantidadMaxima, fechaMinima, fechaMaxima);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ArrayList<EstadoPedidoValue> consultarEstadoPedidos(String cliente, ArrayList<String> productos, String cantidadMinima, String cantidadMaxima, String costoMin, String costoMax, String fechaMin, String fechaMax, ArrayList<String> materiales)
+	{
+		try {
+			return dao.consultarEstadoPedidos(cliente, productos, cantidadMinima, cantidadMaxima, costoMin, costoMax, fechaMin, fechaMax, materiales);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+	
+	public boolean cambiarEstadoEstacionProduccion(String idEstacionProduccion)
+	{
+		try {
+			return dao.cambiarEstadoEstacionProduccion(idEstacionProduccion);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
