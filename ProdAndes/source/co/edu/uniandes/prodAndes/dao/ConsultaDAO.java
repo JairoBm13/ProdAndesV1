@@ -2278,6 +2278,89 @@ public class ConsultaDAO {
 
 	}
 
+	public ArrayList<EstacionProduccion> darEstacionProduccionesConEtapas() throws Exception
+	{
+		ArrayList<EstacionProduccion> resp = new ArrayList<EstacionProduccion>();
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+
+			//Toma todas las otras estaciones de produccion con su cuenta de lista de espera respectiva
+
+			ArrayList<String> select = new ArrayList<String>();
+			//			ArrayList<String> where = new ArrayList<String>();
+			ArrayList<String> group = new ArrayList<String>();
+			ArrayList<String> order = new ArrayList<String>();
+			select.add("ESTACIONPRODUCCION.CODIGO");
+			select.add("ESTACIONPRODUCCION.TIEMPO");
+			select.add("ESTACIONPRODUCCION.CANTIDAD");
+			select.add("ESTACIONPRODUCCION.ESTADO");
+			select.add("ESTACIONPRODUCCION.CODIGOETAPA");
+			select.add("ESTACIONPRODUCCION.NOMBRE");
+			select.add("COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA ");
+			group.add("ESTACIONPRODUCCION.CODIGO");
+			order.add("CUENTA DESC");
+			String tablaOtrasEstaciones = "ESTACIONPRODUCCION JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE";
+			String estacionesDeProduccionOpcionales = generateQuery(select, tablaOtrasEstaciones, new ArrayList<String>(), order, group);
+			System.out.println(estacionesDeProduccionOpcionales);
+
+			PreparedStatement statement = conexion.prepareStatement(estacionesDeProduccionOpcionales);
+			ResultSet rs = statement.executeQuery();
+
+			while(rs.next())
+			{
+				EstacionProduccion est = new EstacionProduccion();
+				est.setCodigo(rs.getLong("CODIGO"));
+				est.setTiempo(rs.getLong("TIEMPO"));
+				est.setCapacidad(rs.getLong("CANTIDAD"));
+				est.setEstado(rs.getString("ESTADO"));
+				est.setCodigoEtapaActual(rs.getLong("CODIGOETAPA"));
+				est.setNombreEstacion(rs.getString("NOMBRE"));
+				est.setNumEtapaProduccion(rs.getLong("CUENTA"));
+
+				//Agrega el nombre de la etapa actual (si esta existe)
+
+				if((Long)est.getCodigoEtapaActual()!=null)
+				{
+					ArrayList<String> select2 = new ArrayList<String>();
+					select2.add("ETAPAPRODUCCION.NOMBRE");
+					ArrayList<String> where2 = new ArrayList<String>();
+					where2.add("ETAPAPRODUCCION.CODIGO="+est.getCodigoEtapaActual());
+					String nombreEtapaActual = this.generateQuery(select2, "ETAPAPRODUCCION", where2, new ArrayList<String>(), new ArrayList<String>());
+					PreparedStatement statement2 = conexion.prepareStatement(nombreEtapaActual);
+					ResultSet rs1 = statement2.executeQuery();
+
+					while(rs1.next())
+					{
+						est.setNombreEtapaActual(rs1.getString("NOMBRE"));
+					}
+					statement2.close();
+				}
+				else
+				{
+					est.setNombreEtapaActual("Sin asignar");
+				}
+
+				resp.add(est);
+			}
+
+			statement.close();
+			closeConnection(conexion);
+
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			closeConnection(conexion);
+			throw new Exception("No se pudo recuperar la informacion de las Estaciones de Procuccion");
+			
+		}
+
+		return resp;
+		
+		
+	}
+
 	//--------------------------------------------------------------
 	// Generadores TODO
 	//--------------------------------------------------------------
