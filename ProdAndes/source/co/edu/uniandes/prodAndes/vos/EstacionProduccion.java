@@ -22,6 +22,10 @@ public class EstacionProduccion {
 	
 	private String estado;
 	
+	private String nombreEstacion;
+	
+	private String nombreEtapaActual;
+	
 	public static String ESTADO_ACTIVO = "Activa";
 	
 	public static String ESTADO_INACTIVO = "Inactiva";
@@ -103,5 +107,23 @@ public class EstacionProduccion {
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
+
+	public String getNombreEstacion() {
+		return nombreEstacion;
+	}
+
+	public void setNombreEstacion(String nombreEstacion) {
+		this.nombreEstacion = nombreEstacion;
+	}
+
+	public String getNombreEtapaActual() {
+		return nombreEtapaActual;
+	}
+
+	public void setNombreEtapaActual(String nombreEtapaActual) {
+		this.nombreEtapaActual = nombreEtapaActual;
+	}
+	
+	
 }
 
