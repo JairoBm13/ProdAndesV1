@@ -2,7 +2,15 @@ package test;
 
 import java.sql.Date;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
 
+import com.sun.security.ntlm.Client;
+
+import co.edu.uniandes.prodAndes.dao.ConsultaDAO;
+import co.edu.uniandes.prodAndes.vos.Cliente;
+import co.edu.uniandes.prodAndes.vos.EstacionProduccion;
+import co.edu.uniandes.prodAndes.vos.EstadoPedidoValue;
+import co.edu.uniandes.prodAndes.vos.ProveedorValue;
 import junit.framework.TestCase;
 
 public class TestApp extends TestCase
@@ -129,6 +137,52 @@ public class TestApp extends TestCase
 		{
 			//e.printStackTrace();
 			
+		}
+	}
+	
+	public void testNuevosRequerimientos()
+	{
+		try {
+			ConsultaDAO elDao = new ConsultaDAO();
+			
+			elDao.cambiarEstadoEstacionProduccion("2");
+			elDao.cambiarEstadoEstacionProduccion("2");	
+			
+			System.out.println("Funciono cambiar estado de una estacion");
+				ArrayList<EstadoPedidoValue> meh = elDao.consultarEstadoPedidos("","", "", "", "", "", "", "", "");
+				for (int i = 0; i < meh.size(); i++) {
+					for (int j = 0; j < meh.get(i).getMateriales().size(); j++) {
+						System.out.println("Pedido de "+meh.get(i).getNombreProducto()+": .................material codigo: "+meh.get(i).getMateriales().get(j).getCodigo()+" de nombre: "+meh.get(i).getMateriales().get(j).getNombre());
+					}
+				}
+				
+			ArrayList<ProveedorValue> proveedores = elDao.consultarProveedores("", "", "", "", "", "", "", "", "", "");
+			for(int i = 0; i< proveedores.size();i++)
+			{
+				System.out.println("Proveedor");
+			}
+			
+			ArrayList<Cliente> clientes = elDao.consultarClientes("", "", "", "", "", "");
+			for(int i=0; i<clientes.size();i++)
+			{
+				System.out.println("Entro for clientes");
+				for(int j = 0;j<clientes.get(i).getPedidos().size();j++)
+				{
+					System.out.println("El cliente de nombre: "+clientes.get(i).getLogin()+" realizo los pedidos de codigo : "+clientes.get(i).getPedidos().get(j).getCodigo()+" cuyo nombre de producto es: "+clientes.get(i).getPedidos().get(j).getProducto().getNombre());
+				}
+			}
+			
+			ArrayList<EstacionProduccion> estaciones = elDao.darEstacionProduccionesConEtapas();
+			for(int i = 0; i<estaciones.size();i++)
+			{
+				System.out.println("La estacion de codigo: "+estaciones.get(i).getCodigo()+" de nombre "+estaciones.get(i).getNombreEstacion()+" tiene "+estaciones.get(i).getNumEtapaProduccion()+" etapas en espera");
+			}
+			
+			
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			fail("No funcionaron bien los nuevos requerimientos");
 		}
 	}
 }
