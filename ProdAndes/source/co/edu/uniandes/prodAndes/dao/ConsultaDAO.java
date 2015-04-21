@@ -1724,10 +1724,11 @@ public class ConsultaDAO {
 			establecerConexion(cadenaConexion, usuario, clave);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			statement = conexion.prepareStatement(selectQuery);
-			statement.setQueryTimeout(5);
+//			statement.setQueryTimeout(5);
 			ResultSet rs = statement.executeQuery();
 
-			while(rs.next()){
+			rs.next();
+			while(!rs.isAfterLast()){
 
 				EstadoPedidoValue vos = new EstadoPedidoValue();
 				vos.setCliente(rs.getString("cliente"));
@@ -1818,7 +1819,7 @@ public class ConsultaDAO {
 		select.add("cliente.codigo as codcliente");
 
 		ArrayList<String> where = new ArrayList<String>();
-		if(producto.isEmpty()){where.add("producto='"+producto+"'");}
+		if(!producto.isEmpty()){where.add("producto='"+producto+"'");}
 
 		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad between "+cantidadMinima+" and "+cantidadMaxima);}
 		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}
@@ -1833,16 +1834,22 @@ public class ConsultaDAO {
 
 		String selectQuery = generateQuery(select, tabla, where, order, new ArrayList<String>());
 		try{
+			System.out.println(selectQuery);
+			
+			
 			establecerConexion(cadenaConexion, usuario, clave);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			statement = conexion.prepareStatement(selectQuery);
 			ResultSet rs = statement.executeQuery();
+			
+			
 
-			while(rs.next()){
+			rs.next();
+			while(!rs.isAfterLast()){
 				Cliente vos = new Cliente();
 
 				vos.setCiudad(rs.getString("ciudad"));
-				vos.setCodigo(rs.getLong("codigocliente"));
+				vos.setCodigo(rs.getLong("codcliente"));
 				vos.setDepartamento(rs.getString("departamento"));
 				vos.setDireccionElectronica(rs.getString("correo"));
 				vos.setDocumentotold(rs.getLong("documentoid"));
@@ -1853,17 +1860,18 @@ public class ConsultaDAO {
 				vos.setResgistroSINV(rs.getString("registrosinv"));
 				vos.setTelefono(rs.getString("telefono"));
 				vos.setTipoDocumento(rs.getInt("tipodocumento"));
-				vos.setTipoIdLegal(rs.getInt("tipodilegal"));
+				vos.setTipoIdLegal(rs.getInt("tipoidlegal"));
 
-				String codcli = rs.getString("codigo.cliente");
+				String codcli = rs.getString("codcliente");
 				ArrayList<Pedido> peds = new ArrayList<Pedido>();
-				while(rs.getString("codigo.cliente").equals(codcli)){
+				while(!rs.isAfterLast()&&rs.getString("codcliente").equals(codcli)){
 					Pedido ped = new Pedido();
 					ped.setCantidad(rs.getInt("cantidad"));
 					ped.setEstado(rs.getInt("estado"));
 					ped.setFechaEntrega(rs.getDate("fechapedido"));
 					ped.setFechaEsperada(rs.getDate("fechaesperada"));
 					ped.setFechaPedido(rs.getDate("fechapedido"));
+					ped.setCodigo(rs.getLong("codpedido"));
 					Producto prd = new Producto();
 					prd.setNombre(rs.getString("producto"));
 					prd.setCodigo(rs.getLong("codproducto"));
@@ -1876,6 +1884,7 @@ public class ConsultaDAO {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 		finally{
 			if(statement != null){
@@ -2294,16 +2303,19 @@ public class ConsultaDAO {
 			//			ArrayList<String> where = new ArrayList<String>();
 			ArrayList<String> group = new ArrayList<String>();
 			ArrayList<String> order = new ArrayList<String>();
-			select.add("ESTACIONPRODUCCION.CODIGO");
-			select.add("ESTACIONPRODUCCION.TIEMPO");
-			select.add("ESTACIONPRODUCCION.CANTIDAD");
-			select.add("ESTACIONPRODUCCION.ESTADO");
-			select.add("ESTACIONPRODUCCION.CODIGOETAPA");
-			select.add("ESTACIONPRODUCCION.NOMBRE");
-			select.add("COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA ");
-			group.add("ESTACIONPRODUCCION.CODIGO");
-			order.add("CUENTA DESC");
-			String tablaOtrasEstaciones = "ESTACIONPRODUCCION JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE";
+			select.add("e.CODIGO");
+			select.add("e.TIEMPO");
+			select.add("e.CAPACIDAD");
+			select.add("e.ESTADO");
+			select.add("e.CODIGOETAPA");
+			select.add("e.NOMBRE");
+			select.add("j.CUENTA");
+//			select.add("COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA ");
+//			select.add("COUNT (*) AS CUENTA ");
+//			group.add("ESTACIONPRODUCCION.CODIGO");
+//			order.add("CUENTA DESC");
+//			String tablaOtrasEstaciones = "ESTACIONPRODUCCION JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE";
+			String tablaOtrasEstaciones = "ESTACIONPRODUCCION e JOIN (SELECT ESTACIONPRODUCCION.CODIGO, COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA  FROM (ESTACIONPRODUCCION LEFT OUTER JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE) GROUP BY ESTACIONPRODUCCION.CODIGO  ORDER BY CUENTA DESC) j ON e.CODIGO=j.CODIGO";
 			String estacionesDeProduccionOpcionales = generateQuery(select, tablaOtrasEstaciones, new ArrayList<String>(), order, group);
 			System.out.println(estacionesDeProduccionOpcionales);
 
@@ -2315,7 +2327,7 @@ public class ConsultaDAO {
 				EstacionProduccion est = new EstacionProduccion();
 				est.setCodigo(rs.getLong("CODIGO"));
 				est.setTiempo(rs.getLong("TIEMPO"));
-				est.setCapacidad(rs.getLong("CANTIDAD"));
+				est.setCapacidad(rs.getLong("CAPACIDAD"));
 				est.setEstado(rs.getString("ESTADO"));
 				est.setCodigoEtapaActual(rs.getLong("CODIGOETAPA"));
 				est.setNombreEstacion(rs.getString("NOMBRE"));
