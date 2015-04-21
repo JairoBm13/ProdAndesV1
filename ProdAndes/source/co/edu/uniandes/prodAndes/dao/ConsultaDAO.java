@@ -1675,7 +1675,7 @@ public class ConsultaDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<EstadoPedidoValue> consultarEstadoPedidos(String cliente, ArrayList<String> productos, String cantidadMinima, String cantidadMaxima, String costoMin, String costoMax, String fechaMin, String fechaMax, ArrayList<String> materiales) throws Exception{
+	public ArrayList<EstadoPedidoValue> consultarEstadoPedidos(String cliente, String productos, String cantidadMinima, String cantidadMaxima, String costoMin, String costoMax, String fechaMin, String fechaMax, String materiales) throws Exception{
 		ArrayList<EstadoPedidoValue> pedidos = new ArrayList<EstadoPedidoValue>();
 		PreparedStatement statement = null;
 
@@ -1696,6 +1696,9 @@ public class ConsultaDAO {
 
 		ArrayList<String> where = new ArrayList<String>();
 		if(!cliente.isEmpty()){where.add(cliente);}
+		
+		if(!productos.isEmpty()){where.add(productos);}
+		if(!materiales.isEmpty()){where.add(materiales);}
 
 		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad between "+cantidadMinima+" and "+cantidadMaxima);}
 		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}

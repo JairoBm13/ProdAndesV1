@@ -374,7 +374,7 @@ public class ProdAndes
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<EstadoPedidoValue> consultarEstadoPedidos(String cliente, ArrayList<String> productos, String cantidadMinima, String cantidadMaxima, String costoMin, String costoMax, String fechaMin, String fechaMax, ArrayList<String> materiales) throws Exception
+	public ArrayList<EstadoPedidoValue> consultarEstadoPedidos(String cliente, String productos, String cantidadMinima, String cantidadMaxima, String costoMin, String costoMax, String fechaMin, String fechaMax, String materiales) throws Exception
 	{
 		return dao.consultarEstadoPedidos(cliente, productos, cantidadMinima, cantidadMaxima, costoMin, costoMax, fechaMin, fechaMax, materiales);
 	}
