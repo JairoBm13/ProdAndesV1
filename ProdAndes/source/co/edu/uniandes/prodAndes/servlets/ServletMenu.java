@@ -96,7 +96,21 @@ public class ServletMenu extends ServletTemplate{
 		respuesta.println("                            <p>");
 		respuesta.println("                            	<ul>");
 		respuesta.println("                                	<li><a href=\"consultarExistenciaMaterial.html\">Consultar existencia de material</a></li>");
-		respuesta.println("                                    <li><a href=\"consultarMaterial.html\">Consultar informaci&oacute;n de un Material</a></li>");
+		respuesta.println("                                 <li><a href=\"consultarMaterial.html\">Consultar informaci&oacute;n de un Material</a></li>");
+		if(fachada.getTipoUsuario()==1 || (fachada.getTipoUsuario()==3 && fachada.getOperarioVal().isGerente())){
+			respuesta.println("                                 <li><a href=\"estadoPedido.html\">Consultar estado de los pedidos</a></li>");
+			respuesta.println("                                 <li><a href=\"proveedores.html\">Consultar estado de los pedidos</a></li>");
+			respuesta.println("                                 <li><a href=\"clientes.html\">Consultar estado de los pedidos</a></li>");
+		}
+		respuesta.println("                                </ul>");
+		respuesta.println("                            </p>");
+		respuesta.println("							<h4 class=\"classic-title\"><span>Operaciones</span></h4>");
+		respuesta.println("                            ");
+		respuesta.println("                            <p>");
+		respuesta.println("                            	<ul>");
+		if(fachada.getTipoUsuario()==1 || (fachada.getTipoUsuario()==3 && fachada.getOperarioVal().isGerente())){
+			respuesta.println("                                 <li><a href=\"cambiarEstadoEstacion.html\">Consultar estado de los pedidos</a></li>");
+		}
 		respuesta.println("                                </ul>");
 		respuesta.println("                            </p>");
 		respuesta.println("							");

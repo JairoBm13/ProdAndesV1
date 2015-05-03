@@ -90,7 +90,7 @@ public class ServletLogin extends ServletTemplate {
 		out.println("		<br><br><br>");
 		out.println("			<div class=\"panel panel-info\">");
 		out.println("				<div class=\"panel-heading\">Ha ingresado exitosamente en la pagina, ahora puede hacer uso de nuestro ");
-		out.println("				<a href=\"portal.htm\">portal de servicios.</a>)</div>");
+		out.println("				<a href=\"menu.html\">portal de servicios.</a>)</div>");
 		out.println("				</div>");
 		out.println("		</div>");
 		out.println("	</div>");

@@ -10,6 +10,7 @@ import co.edu.uniandes.prodAndes.dao.ConsultaDAO;
 import co.edu.uniandes.prodAndes.vos.Cliente;
 import co.edu.uniandes.prodAndes.vos.EstacionProduccion;
 import co.edu.uniandes.prodAndes.vos.EstadoPedidoValue;
+import co.edu.uniandes.prodAndes.vos.Proveedor;
 import co.edu.uniandes.prodAndes.vos.ProveedorValue;
 import junit.framework.TestCase;
 
@@ -146,7 +147,7 @@ public class TestApp extends TestCase
 			ConsultaDAO elDao = new ConsultaDAO();
 			
 			elDao.cambiarEstadoEstacionProduccion("2");
-			elDao.cambiarEstadoEstacionProduccion("2");	
+//			elDao.cambiarEstadoEstacionProduccion("2");	
 			
 			System.out.println("Funciono cambiar estado de una estacion");
 				ArrayList<EstadoPedidoValue> meh = elDao.consultarEstadoPedidos("","", "", "", "", "", "", "", "");
@@ -156,7 +157,7 @@ public class TestApp extends TestCase
 					}
 				}
 				
-			ArrayList<ProveedorValue> proveedores = elDao.consultarProveedores("", "", "", "", "", "", "", "", "", "");
+			ArrayList<Proveedor> proveedores = elDao.consultarProveedores("", "", "", "", "", "", "", "", "", "");
 			for(int i = 0; i< proveedores.size();i++)
 			{
 				System.out.println("Proveedor");

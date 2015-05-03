@@ -7,14 +7,15 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import co.edu.uniandes.prodAndes.vos.Cliente;
 import co.edu.uniandes.prodAndes.vos.EstadoPedidoValue;
 import co.edu.uniandes.prodAndes.vos.Material;
 import co.edu.uniandes.prodAndes.vos.Operario;
 import co.edu.uniandes.prodAndes.vos.Producto;
+import co.edu.uniandes.prodAndes.vos.Proveedor;
+import co.edu.uniandes.prodAndes.vos.ProveedorValue;
 
-public class ServletConsultarEstadoPedidos extends ServletTemplate{
-
+public class ServletConsultarProveedores extends ServletTemplate{
+	
 	/**
 	 * 
 	 */
@@ -55,14 +56,14 @@ public class ServletConsultarEstadoPedidos extends ServletTemplate{
 				respuesta.println("							<!-- Some Text -->");
 				respuesta.println("							");
 				respuesta.println("");
-				respuesta.println("                                <form  action=\"estadoPedido.html\">");
+				respuesta.println("                                <form  action=\"proveedor.html\">");
 				respuesta.println("                                		<input type=\"hidden\" name=\"registrado\" value=\"registrado\"><br>");
-//				respuesta.println("										<label for=\"selcliente\">Clientes:</label>");
-//				respuesta.println("										<div class=\"input-group\">");
-//				respuesta.println("                                   		<select id=\"selcliente\"  name=\"selcliente\" class=\"form-control\" >");
-//				respuesta.println(escribirClientes());
-//				respuesta.println("											</select>");        
-//				respuesta.println("											<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span></div>");
+				respuesta.println("										<label for=\"selproveedor\">Clientes:</label>");
+				respuesta.println("										<div class=\"input-group\">");
+				respuesta.println("                                   		<select id=\"selproveedor\"  name=\"selproveedor\" class=\"form-control\" >");
+				respuesta.println(escribirProveedores());
+				respuesta.println("											</select>");        
+				respuesta.println("											<span class=\"input-group-addon\"><span class=\"glyphicon glyphicon-asterisk\"></span></span></div>");
 				respuesta.println("										<label for=\"selproducto\">Producto:</label>           <div class=\"input-group\">");
 				respuesta.println("                                   	<select id=\"selproducto\"  name=\"selproducto\" class=\"form-control\" >");
 				respuesta.println(escribirProductos());
@@ -134,7 +135,7 @@ public class ServletConsultarEstadoPedidos extends ServletTemplate{
 				String datemin = request.getParameter("datemin");
 				String datemax = request.getParameter("datemax");
 				try {
-					ArrayList<EstadoPedidoValue> pedidos = fachada.consultarEstadoPedidos(codCliente, codProducto, cantProdMin, cantProdMax, costoMin, CostoMax, datemin, datemax, codmaterial);
+					ArrayList<Proveedor> pedidos = fachada.consultarProveedores("", "", "", "", "", "", "", "", "", "");
 					respuesta.println("<!-- Start Content -->");
 					respuesta.println("		<div id=\"content\">");
 					respuesta.println("			<div class=\"container\">");
@@ -260,7 +261,7 @@ public class ServletConsultarEstadoPedidos extends ServletTemplate{
 	
 	}
 
-	private String escribirTablaEstadoPedidos(ArrayList<EstadoPedidoValue> pedidos){
+	private String escribirTablaEstadoPedidos(ArrayList<Proveedor> pedidos){
 		String tabla = "";
 		tabla += "<tr><th>C&oacute;digo Pedido</th>"
 				+ "<th>Cliente</th>"
@@ -274,33 +275,24 @@ public class ServletConsultarEstadoPedidos extends ServletTemplate{
 				+ "<th>Fecha entrega</th></tr>";
 		for (int i = 0; i < pedidos.size(); i++) {
 			tabla += "<tr>";
-			EstadoPedidoValue actual = pedidos.get(i);
+			Proveedor actual = pedidos.get(i);
 			tabla += "<td>"+actual.getCodigo()+"</td>";
-			tabla += "<td>"+actual.getCliente()+"</td>";
-			tabla += "<td>"+actual.getCodigoCliente()+"</td>";
-			tabla += "<td>"+actual.getNombreProducto()+"</td>";
-			tabla += "<td>"+actual.getEstado()+"</td>";
-			tabla += "<td>"+actual.getCantidad()+"</td>";
-			tabla += "<td>"+actual.getCosto()+"</td>";
-			tabla += "<td>"+actual.getFechap()+"</td>";
-			tabla += "<td>"+actual.getFechaes()+"</td>";
-			tabla += "<td>"+actual.getFechae()+"</td>";
 			tabla += "</tr>";
 		}
 		return tabla;
 	}
 
-	private String escribirClientes(){
+	private String escribirProveedores(){
 		String options = "<option></option>\n";
-//		try {
-//			ArrayList<Cliente> clientes = fachada.darTodosLosClientes();
-//			for (int i = 0; i < clientes.size(); i++) {
-//				Cliente act = clientes.get(i);
-//				options = "<option value=\""+act.getCodigo()+"\">"+act.getNombreLegal()+"</option>\n";				
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		try {
+			ArrayList<Proveedor> clientes = fachada.darProveedores();
+			for (int i = 0; i < clientes.size(); i++) {
+				Proveedor act = clientes.get(i);
+				options = "<option value=\""+act.getCodigo()+"\">"+act.getNombreLegal()+"</option>\n";				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return options;
 	}
 
@@ -331,4 +323,5 @@ public class ServletConsultarEstadoPedidos extends ServletTemplate{
 		}
 		return options;
 	}
+	
 }

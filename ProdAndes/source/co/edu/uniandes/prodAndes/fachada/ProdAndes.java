@@ -339,7 +339,7 @@ public class ProdAndes
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<ProveedorValue> consultarProveedores(String proveedor, String minCantidadEntrega, String maxCantidadEntrega, String minTiempo, String maxTiempo, String producto, String minCosto, String maxCosto, String minCantidad, String maxCantidad) throws Exception
+	public ArrayList<Proveedor> consultarProveedores(String proveedor, String minCantidadEntrega, String maxCantidadEntrega, String minTiempo, String maxTiempo, String producto, String minCosto, String maxCosto, String minCantidad, String maxCantidad) throws Exception
 	{
 		return dao.consultarProveedores(proveedor, minCantidadEntrega, maxCantidadEntrega, minTiempo, maxTiempo, producto, minCosto, maxCosto, minCantidad, maxCantidad);
 	}
@@ -388,5 +388,21 @@ public class ProdAndes
 	public boolean cambiarEstadoEstacionProduccion(String idEstacionProduccion) throws Exception
 	{
 		return dao.cambiarEstadoEstacionProduccion(idEstacionProduccion);
+	}
+
+	public ArrayList<Cliente> darTodosLosClientes() throws Exception {
+		return dao.consultarClientes();
+	}
+
+	public ArrayList<Proveedor> darProveedores() throws Exception {
+		return dao.darProveedores();
+	}
+
+	public ArrayList<co.edu.uniandes.prodAndes.vos.EstacionProduccion> darEstaciones() throws Exception {
+		return dao.darEstaciones();
+	}
+
+	public ArrayList<co.edu.uniandes.prodAndes.vos.EstacionProduccion> darEstacionesConEtapa() throws Exception {
+		return dao.darEstacionProduccionesConEtapas();
 	}
 }

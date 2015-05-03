@@ -103,7 +103,7 @@ public class PruebasDAONuevosRequerimientos {
 	public static void main(String[] args) {
 		PruebasDAONuevosRequerimientos cosa = new PruebasDAONuevosRequerimientos();
 		try {
-			cosa.cambiarEstadoEstacionProduccion("2");
+//			cosa.cambiarEstadoEstacionProduccion("2");
 //			cosa.hacerSelect();
 //			ArrayList<EstadoPedidoValue> meh = cosa.consultarEstadoPedidos("", new ArrayList<String>(), "", "", "", "", "", "", new ArrayList<String>());
 //			for (int i = 0; i < meh.size(); i++) {
@@ -111,11 +111,50 @@ public class PruebasDAONuevosRequerimientos {
 //					System.out.println(meh.get(i).getMateriales().get(j).getCodigo());
 //				}
 //			}
+//			cosa.registrarEjecucionEtapaDeProduccion(codigo, etapa);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+	public void registrarEjecucionEtapaDeProduccion(int codigo, int etapa) throws Exception{
+		PreparedStatement statement = null;		
+
+		try {
+			String selectQuery = "select cantidad from producto where estado="+etapa+"codigo="+codigo;
+			establecerConexion(cadenaConexion, usuario, clave);
+			statement = conexion.prepareStatement(selectQuery);
+
+			ResultSet rs = statement.executeQuery();
+			int cantidad;
+			rs.next();
+			cantidad = rs.getInt("cantidad");
+			String updateIncQuery = "update producto set cantidad=cantidad+"+cantidad+" where codigo="+codigo+" estado="+etapa+1;
+			statement = conexion.prepareStatement(updateIncQuery);
+			statement.executeUpdate();
+			String updateDecQuery = "update producto set cantidad=0 where codigo="+codigo+" estado="+etapa;
+			statement = conexion.prepareStatement(updateDecQuery);
+			statement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new Exception("ERROR = ConsultaDAO: loadRowsBy(..) Agregando parametros y executando el statement!!!");
+		}finally 
+		{
+			if (statement != null) 
+			{
+				try {
+					statement.close();
+				} catch (SQLException exception) {
+
+					throw new Exception("ERROR: ConsultaDAO: loadRow() =  cerrando una conexión.");
+				}
+			}
+			closeConnection(conexion);
+		}
+	}
+
 
 	/**
 	 * Método que se encarga de crear la conexión con el Driver Manager

@@ -172,7 +172,12 @@ public abstract class ServletTemplate extends HttpServlet {
         respuesta.println("");
         respuesta.println("    <!--[if IE 8]><script src=\"http://html5shiv.googlecode.com/svn/trunk/html5.js\"></script><![endif]-->");
         respuesta.println("    <!--[if lt IE 9]><script src=\"http://html5shiv.googlecode.com/svn/trunk/html5.js\"></script><![endif]-->");
-        respuesta.println("");
+        respuesta.println("<style>");
+        respuesta.println("table, th, td {");
+        respuesta.println("border: 1px solid black;");
+        respuesta.println("border-collapse: collapse;");
+        respuesta.println("}");
+        respuesta.println("</style>");   
         respuesta.println("</head>");
         respuesta.println("");
         respuesta.println("<body>");
