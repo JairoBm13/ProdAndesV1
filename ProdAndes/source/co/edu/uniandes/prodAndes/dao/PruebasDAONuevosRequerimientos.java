@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import co.edu.uniandes.prodAndes.vos.Administrador;
 import co.edu.uniandes.prodAndes.vos.Cliente;
 import co.edu.uniandes.prodAndes.vos.EstacionProduccion;
 import co.edu.uniandes.prodAndes.vos.EstadoPedidoValue;
@@ -103,7 +104,8 @@ public class PruebasDAONuevosRequerimientos {
 	public static void main(String[] args) {
 		PruebasDAONuevosRequerimientos cosa = new PruebasDAONuevosRequerimientos();
 		try {
-			cosa.cambiarEstadoEstacionProduccion("2");
+			new ConsultaDAO().consultarPedidosV2("hola", 1);
+//			cosa.cambiarEstadoEstacionProduccion("2");
 //			cosa.hacerSelect();
 //			ArrayList<EstadoPedidoValue> meh = cosa.consultarEstadoPedidos("", new ArrayList<String>(), "", "", "", "", "", "", new ArrayList<String>());
 //			for (int i = 0; i < meh.size(); i++) {
@@ -1029,5 +1031,55 @@ public class PruebasDAONuevosRequerimientos {
 	//FIXME
 	private String generateDelete(){
 		return "";
+	}
+	
+	public ArrayList<Pedido> consultarPedidosV2(String tipoMaterial, long costo)
+	{
+		ArrayList<Pedido> resp = new ArrayList<Pedido>();
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			ArrayList<String> select = new ArrayList<String>();
+			select.add("ped.*");
+			String tabla = "PEDIDO ped, Producto, EtapaProduccion, EstacionProduccion, Requiere, Material";
+			ArrayList<String> where = new ArrayList<String>();
+			where.add("ped.CodigoProducto=Producto.Codigo");
+			where.add("Producto.Codigo=EtapaProduccion.CodigoProducto");
+			where.add("EstacionProduccion.CodigoEtapa=EtapaProduccion.Codigo");
+			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
+			where.add("Material.Codigo=Requiere.CodigoMaterial");
+			where.add("Material.Tipo='"+tipoMaterial+"'");
+			where.add("Producto.Costo>"+costo);
+			String solicitudPedidos = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
+			System.out.println(solicitudPedidos);
+			
+			PreparedStatement statement = conexion.prepareStatement(solicitudPedidos);
+			ResultSet resultados = statement.executeQuery();
+			while(resultados.next())
+			{
+				Pedido temp = new Pedido();
+				temp.setCodigo(resultados.getLong("ped.Codigo"));
+				temp.setEstado(resultados.getInt("ped.Estado"));
+				temp.setCantidad(resultados.getLong("ped.Cantidad"));
+				temp.setFechaPedido(resultados.getDate("ped.FechaPedido"));
+				temp.setFechaEsperada(resultados.getDate("ped.FechaEsperada"));
+				temp.setFechaEntrega(resultados.getDate("ped.FechaEntrega"));
+				Producto tempProd = new Producto();
+				tempProd.setCodigo(resultados.getLong("ped.CodigoProducto"));
+				Administrador tempAdmin = new Administrador();
+				tempAdmin.setCodigo(resultados.getLong("ped.CodigoEmpresa"));
+				Cliente tempClien = new Cliente();
+				tempClien.setCodigo(resultados.getLong("ped.CodigoCliente"));
+				temp.setProducto(tempProd);
+				temp.setAdmin(tempAdmin);
+				temp.setCliente(tempClien);
+				resp.add(temp);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resp;
+		
 	}
 }
