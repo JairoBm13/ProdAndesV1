@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import co.edu.uniandes.prodAndes.vos.Administrador;
@@ -107,6 +108,10 @@ public class PruebasDAONuevosRequerimientos {
 			ConsultaDAO consultaDao = new ConsultaDAO();
 			consultaDao.consultarPedidosV2("hola", 1);
 			consultaDao.consultarMaterialesV2ParaPedidos("1");
+			consultaDao.consultarEjecucionEtapasProduccionV1(new Date(0, 0, 0), new Date(115, 2, 17), null, null, "", null);
+			consultaDao.consultarEjecucionEtapasProduccionV1(new Date(0, 0, 0), new Date(115, 2, 17), "1", "Materia Prima", "1", new Long[]{(long) 0,(long) 1000000});
+			consultaDao.consultarEjecucionEtapasProduccionV2(new Date(0, 0, 0), new Date(115, 2, 17), null, null, "", null);
+			consultaDao.consultarEjecucionEtapasProduccionV2(new Date(0, 0, 0), new Date(115, 2, 17), "1", "Materia Prima", "1", new Long[]{(long) 0,(long) 1000000});
 			
 //			cosa.cambiarEstadoEstacionProduccion("2");
 //			cosa.hacerSelect();
