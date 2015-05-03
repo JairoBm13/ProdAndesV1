@@ -11,6 +11,8 @@
 package co.edu.uniandes.prodAndes.dao;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -2443,6 +2445,231 @@ public class ConsultaDAO {
 		
 	}
 
+	
+	//--------------------------------------------------------------
+	// Requerimientos Funcionales Iteración 4
+	//--------------------------------------------------------------
+	
+	//RFC 8 TODO
+	
+	public ArrayList<EtapaProduccion> consultarEjecucionEtapasProduccionV1(java.util.Date fechaInicio, java.util.Date fechaFin, String idMaterial, String tipoMaterial, String idPedido, Long[] cantidades)
+	{
+		ArrayList<EtapaProduccion> resp = new ArrayList<EtapaProduccion>();
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			String solicitudEtapas = generateQueryRFC8yRFC9(fechaInicio, fechaFin, idMaterial, tipoMaterial, idPedido, cantidades);
+			System.out.println(solicitudEtapas);
+			
+			PreparedStatement statement = conexion.prepareStatement(solicitudEtapas);
+			ResultSet resultados = statement.executeQuery();
+			while(resultados.next())
+			{
+				EtapaProduccion temp = new EtapaProduccion();
+				temp.setCodigo(resultados.getLong("Codigo"));
+				temp.setEtapa(resultados.getInt("Etapa"));
+				temp.setNombre(resultados.getString("Nombre"));
+				temp.setFechaInicio(resultados.getDate("FechaInicio"));
+				temp.setFechaFin(resultados.getDate("FechaFin"));
+				temp.setTiempoEjecuacion(resultados.getLong("TiempoEjecucion"));
+				temp.setDescripcion(resultados.getString("Descripcion"));
+				resp.add(temp);
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resp;
+	}
+	
+	//RFC 9 TODO
+	
+	public ArrayList<EtapaProduccion> consultarEjecucionEtapasProduccionV2(java.util.Date fechaInicio, java.util.Date fechaFin, String idMaterial, String tipoMaterial, String idPedido, Long[] cantidades)
+	{
+		ArrayList<EtapaProduccion> resp = new ArrayList<EtapaProduccion>();
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			String solicitudEtapas = generateQueryRFC8yRFC9(fechaInicio, fechaFin, idMaterial, tipoMaterial, idPedido, cantidades);
+			solicitudEtapas = "select eta2.* from (select * from ETAPAPRODUCCION) eta2 MINUS ("+solicitudEtapas+")";
+			System.out.println(solicitudEtapas);
+			
+			PreparedStatement statement = conexion.prepareStatement(solicitudEtapas);
+			ResultSet resultados = statement.executeQuery();
+			while(resultados.next())
+			{
+				EtapaProduccion temp = new EtapaProduccion();
+				temp.setCodigo(resultados.getLong("Codigo"));
+				temp.setEtapa(resultados.getInt("Etapa"));
+				temp.setNombre(resultados.getString("Nombre"));
+				temp.setFechaInicio(resultados.getDate("FechaInicio"));
+				temp.setFechaFin(resultados.getDate("FechaFin"));
+				temp.setTiempoEjecuacion(resultados.getLong("TiempoEjecucion"));
+				temp.setDescripcion(resultados.getString("Descripcion"));
+				resp.add(temp);
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resp;
+	}
+	
+	private String generateQueryRFC8yRFC9(java.util.Date fechaInicio, java.util.Date fechaFin, String idMaterial, String tipoMaterial, String idPedido, Long[] cantidades)
+	{
+		ArrayList<String> select = new ArrayList<String>();
+		select.add("eta.*");
+		String tabla = " EtapaProduccion eta ";
+		ArrayList<String> where = new ArrayList<String>();
+		java.sql.Date nuevaFechaInicio = new java.sql.Date(fechaInicio.getTime());
+		java.sql.Date nuevaFechaFin = new java.sql.Date(fechaFin.getTime());
+		DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+		where.add("'"+df.format(nuevaFechaInicio)+"'<=eta.FechaInicio");
+		where.add("'"+df.format(nuevaFechaFin)+"'>=eta.FechaFin");
+		if(tipoMaterial!=null&&!tipoMaterial.isEmpty())
+		{
+			tabla += " , EstacionProduccion, Requiere, Material ";
+			where.add("EstacionProduccion.CodigoEtapa=eta.Codigo");
+			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
+			where.add("Material.Codigo=Requiere.CodigoMaterial");
+			where.add("Material.Tipo='"+tipoMaterial+"'");
+			if(idMaterial!=null&&!idMaterial.isEmpty())
+				where.add("Material.Codigo="+idMaterial);
+		}
+		else if(idMaterial!=null&&!idMaterial.isEmpty())
+		{
+			tabla += " , EstacionProduccion, Requiere ";
+			where.add("EstacionProduccion.CodigoEtapa=eta.Codigo");
+			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
+			where.add("Material.Codigo="+idMaterial);
+		}
+		
+		if(idPedido!=null&&!idPedido.isEmpty())
+		{
+			tabla = "PEDIDO, Producto, "+tabla;
+			where.add("PEDIDO.CodigoProducto=Producto.Codigo");
+			where.add("Producto.Codigo= eta.CODIGOPRODUCTO ");
+			where.add("PEDIDO.Codigo="+idPedido);
+			if(cantidades!=null&&cantidades.length>1)
+			{
+				where.add("Producto.Cantidad>="+cantidades[0]);
+				where.add("Producto.Cantidad<="+cantidades[1]);
+			}
+		}
+		else if(cantidades!=null&&cantidades.length>1)
+		{
+			tabla = "Producto, "+tabla;
+			where.add("Producto.Codigo= eta.CODIGOPRODUCTO ");
+			where.add("Producto.Cantidad>="+cantidades[0]);
+			where.add("Producto.Cantidad<="+cantidades[1]);
+		}
+		
+		return generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
+	}
+	
+	//RFC 10 TODO
+	
+	public ArrayList<Pedido> consultarPedidosV2(String tipoMaterial, long costo)
+	{
+		ArrayList<Pedido> resp = new ArrayList<Pedido>();
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			ArrayList<String> select = new ArrayList<String>();
+			select.add("ped.*");
+			String tabla = "PEDIDO ped, Producto, EtapaProduccion, EstacionProduccion, Requiere, Material";
+			ArrayList<String> where = new ArrayList<String>();
+			where.add("ped.CodigoProducto=Producto.Codigo");
+			where.add("Producto.Codigo=EtapaProduccion.CodigoProducto");
+			where.add("EstacionProduccion.CodigoEtapa=EtapaProduccion.Codigo");
+			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
+			where.add("Material.Codigo=Requiere.CodigoMaterial");
+			where.add("Material.Tipo='"+tipoMaterial+"'");
+			where.add("Producto.Costo>"+costo);
+			String solicitudPedidos = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
+			System.out.println(solicitudPedidos);
+			
+			PreparedStatement statement = conexion.prepareStatement(solicitudPedidos);
+			ResultSet resultados = statement.executeQuery();
+			while(resultados.next())
+			{
+				Pedido temp = new Pedido();
+				temp.setCodigo(resultados.getLong("Codigo"));
+				temp.setEstado(resultados.getInt("Estado"));
+				temp.setCantidad(resultados.getLong("Cantidad"));
+				temp.setFechaPedido(resultados.getDate("FechaPedido"));
+				temp.setFechaEsperada(resultados.getDate("FechaEsperada"));
+				temp.setFechaEntrega(resultados.getDate("FechaEntrega"));
+				Producto tempProd = new Producto();
+				tempProd.setCodigo(resultados.getLong("CodigoProducto"));
+				Administrador tempAdmin = new Administrador();
+				tempAdmin.setCodigo(resultados.getLong("CodigoEmpresa"));
+				Cliente tempClien = new Cliente();
+				tempClien.setCodigo(resultados.getLong("CodigoCliente"));
+				temp.setProducto(tempProd);
+				temp.setAdmin(tempAdmin);
+				temp.setCliente(tempClien);
+				resp.add(temp);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resp;
+		
+	}
+	
+	//RFC 11 TODO
+	
+	public ArrayList<Pedido> consultarMaterialesV2ParaPedidos(String idMaterial)
+	{
+		ArrayList<Pedido> resp = new ArrayList<Pedido>();
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			ArrayList<String> select = new ArrayList<String>();
+			select.add("ped.*");
+			String tabla = "PEDIDO ped, Producto, EtapaProduccion, EstacionProduccion, Requiere";
+			ArrayList<String> where = new ArrayList<String>();
+			where.add("ped.CodigoProducto=Producto.Codigo");
+			where.add("Producto.Codigo=EtapaProduccion.CodigoProducto");
+			where.add("EstacionProduccion.CodigoEtapa=EtapaProduccion.Codigo");
+			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
+			where.add(idMaterial+"=Requiere.CodigoMaterial");
+			String solicitudPedidos = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
+			System.out.println(solicitudPedidos);
+			
+			PreparedStatement statement = conexion.prepareStatement(solicitudPedidos);
+			ResultSet resultados = statement.executeQuery();
+			while(resultados.next())
+			{
+				Pedido temp = new Pedido();
+				temp.setCodigo(resultados.getLong("Codigo"));
+				temp.setEstado(resultados.getInt("Estado"));
+				temp.setCantidad(resultados.getLong("Cantidad"));
+				temp.setFechaPedido(resultados.getDate("FechaPedido"));
+				temp.setFechaEsperada(resultados.getDate("FechaEsperada"));
+				temp.setFechaEntrega(resultados.getDate("FechaEntrega"));
+				Producto tempProd = new Producto();
+				tempProd.setCodigo(resultados.getLong("CodigoProducto"));
+				Administrador tempAdmin = new Administrador();
+				tempAdmin.setCodigo(resultados.getLong("CodigoEmpresa"));
+				Cliente tempClien = new Cliente();
+				tempClien.setCodigo(resultados.getLong("CodigoCliente"));
+				temp.setProducto(tempProd);
+				temp.setAdmin(tempAdmin);
+				temp.setCliente(tempClien);
+				resp.add(temp);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resp;
+		
+	}
+	
+	
 	//--------------------------------------------------------------
 	// Generadores TODO
 	//--------------------------------------------------------------
@@ -2471,7 +2698,7 @@ public class ConsultaDAO {
 			while(iteraWhere.hasNext()){
 				String act = iteraWhere.next();
 				if(iteraWhere.hasNext()){
-					query += act+"AND ";
+					query += act+" AND ";
 				}
 				else{
 					query += act;
@@ -2536,7 +2763,7 @@ public class ConsultaDAO {
 			while(iteraWhere.hasNext()){
 				String act = iteraWhere.next();
 				if(iteraWhere.hasNext()){
-					query += act+"AND ";
+					query += act+" AND ";
 				}
 				else{
 					query += act;
@@ -2619,7 +2846,7 @@ public class ConsultaDAO {
 			while(iteraWhere.hasNext()){
 				String act = iteraWhere.next();
 				if(iteraWhere.hasNext()){
-					query += act+"AND ";
+					query += act+" AND ";
 				}
 				else{
 					query += act;
