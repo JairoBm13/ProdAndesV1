@@ -104,7 +104,10 @@ public class PruebasDAONuevosRequerimientos {
 	public static void main(String[] args) {
 		PruebasDAONuevosRequerimientos cosa = new PruebasDAONuevosRequerimientos();
 		try {
-			new ConsultaDAO().consultarPedidosV2("hola", 1);
+			ConsultaDAO consultaDao = new ConsultaDAO();
+			consultaDao.consultarPedidosV2("hola", 1);
+			consultaDao.consultarMaterialesV2ParaPedidos("1");
+			
 //			cosa.cambiarEstadoEstacionProduccion("2");
 //			cosa.hacerSelect();
 //			ArrayList<EstadoPedidoValue> meh = cosa.consultarEstadoPedidos("", new ArrayList<String>(), "", "", "", "", "", "", new ArrayList<String>());

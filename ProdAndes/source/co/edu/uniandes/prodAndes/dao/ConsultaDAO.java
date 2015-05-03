@@ -2407,18 +2407,18 @@ public class ConsultaDAO {
 			while(resultados.next())
 			{
 				Pedido temp = new Pedido();
-				temp.setCodigo(resultados.getLong("ped.Codigo"));
-				temp.setEstado(resultados.getInt("ped.Estado"));
-				temp.setCantidad(resultados.getLong("ped.Cantidad"));
-				temp.setFechaPedido(resultados.getDate("ped.FechaPedido"));
-				temp.setFechaEsperada(resultados.getDate("ped.FechaEsperada"));
-				temp.setFechaEntrega(resultados.getDate("ped.FechaEntrega"));
+				temp.setCodigo(resultados.getLong("Codigo"));
+				temp.setEstado(resultados.getInt("Estado"));
+				temp.setCantidad(resultados.getLong("Cantidad"));
+				temp.setFechaPedido(resultados.getDate("FechaPedido"));
+				temp.setFechaEsperada(resultados.getDate("FechaEsperada"));
+				temp.setFechaEntrega(resultados.getDate("FechaEntrega"));
 				Producto tempProd = new Producto();
-				tempProd.setCodigo(resultados.getLong("ped.CodigoProducto"));
+				tempProd.setCodigo(resultados.getLong("CodigoProducto"));
 				Administrador tempAdmin = new Administrador();
-				tempAdmin.setCodigo(resultados.getLong("ped.CodigoEmpresa"));
+				tempAdmin.setCodigo(resultados.getLong("CodigoEmpresa"));
 				Cliente tempClien = new Cliente();
-				tempClien.setCodigo(resultados.getLong("ped.CodigoCliente"));
+				tempClien.setCodigo(resultados.getLong("CodigoCliente"));
 				temp.setProducto(tempProd);
 				temp.setAdmin(tempAdmin);
 				temp.setCliente(tempClien);
@@ -2434,6 +2434,54 @@ public class ConsultaDAO {
 	}
 	
 	//RFC 11 TODO
+	
+	public ArrayList<Pedido> consultarMaterialesV2ParaPedidos(String idMaterial)
+	{
+		ArrayList<Pedido> resp = new ArrayList<Pedido>();
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			ArrayList<String> select = new ArrayList<String>();
+			select.add("ped.*");
+			String tabla = "PEDIDO ped, Producto, EtapaProduccion, EstacionProduccion, Requiere";
+			ArrayList<String> where = new ArrayList<String>();
+			where.add("ped.CodigoProducto=Producto.Codigo");
+			where.add("Producto.Codigo=EtapaProduccion.CodigoProducto");
+			where.add("EstacionProduccion.CodigoEtapa=EtapaProduccion.Codigo");
+			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
+			where.add(idMaterial+"=Requiere.CodigoMaterial");
+			String solicitudPedidos = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
+			System.out.println(solicitudPedidos);
+			
+			PreparedStatement statement = conexion.prepareStatement(solicitudPedidos);
+			ResultSet resultados = statement.executeQuery();
+			while(resultados.next())
+			{
+				Pedido temp = new Pedido();
+				temp.setCodigo(resultados.getLong("Codigo"));
+				temp.setEstado(resultados.getInt("Estado"));
+				temp.setCantidad(resultados.getLong("Cantidad"));
+				temp.setFechaPedido(resultados.getDate("FechaPedido"));
+				temp.setFechaEsperada(resultados.getDate("FechaEsperada"));
+				temp.setFechaEntrega(resultados.getDate("FechaEntrega"));
+				Producto tempProd = new Producto();
+				tempProd.setCodigo(resultados.getLong("CodigoProducto"));
+				Administrador tempAdmin = new Administrador();
+				tempAdmin.setCodigo(resultados.getLong("CodigoEmpresa"));
+				Cliente tempClien = new Cliente();
+				tempClien.setCodigo(resultados.getLong("CodigoCliente"));
+				temp.setProducto(tempProd);
+				temp.setAdmin(tempAdmin);
+				temp.setCliente(tempClien);
+				resp.add(temp);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resp;
+		
+	}
 	
 	
 	//--------------------------------------------------------------
