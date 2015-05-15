@@ -1,18 +1,16 @@
 /**
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * $Id: ConsultaDAO.java,v 1.10 
+ * $Id: ConsultaDAO.java,v 2.0 
  * Universidad de los Andes (Bogotá - Colombia)
  * Departamento de Ingeniería de Sistemas y Computación 
  *
- * Ejercicio: VideoAndes
- * Autor: Juan Diego Toro - 1-Marzo-2010
+ * Ejercicio: ProdAndes
+ * Autor: Jairo Bautissta y Nelson Sánchez - 2015
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package co.edu.uniandes.prodAndes.dao;
 
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -27,7 +25,6 @@ import co.edu.uniandes.prodAndes.vos.Pedido;
 import co.edu.uniandes.prodAndes.vos.PedidoMaterial;
 import co.edu.uniandes.prodAndes.vos.Producto;
 import co.edu.uniandes.prodAndes.vos.Proveedor;
-import co.edu.uniandes.prodAndes.vos.ProveedorValue;
 
 /**
  * Clase ConsultaDAO, encargada de hacer las consultas básicas para el cliente
@@ -35,18 +32,18 @@ import co.edu.uniandes.prodAndes.vos.ProveedorValue;
 public class ConsultaDAO {
 
 	//----------------------------------------------------
-	//Constantes
+	// Constantes TODO
 	//----------------------------------------------------
 	/**
 	 * ruta donde se encuentra el archivo de conexión.
 	 */
-	private static final String ARCHIVO_CONEXION = "../WebContent/conexion.properties";
+//	private static final String ARCHIVO_CONEXION = "../WebContent/conexion.properties";
 
 	private static final String CONSULTA_PRODUCTO = "Producto";
 
-	private static final String CONSULTA_MATERIAL = "Material";
-
-	private static final String CONSULTA_ETAPA_PROD = "Etapa Produccion";
+//	private static final String CONSULTA_MATERIAL = "Material";
+//
+//	private static final String CONSULTA_ETAPA_PROD = "Etapa Produccion";
 
 	public static final String TIPO_MATERIAL_MATERIA_PRIMA = "Materia Prima";
 
@@ -59,7 +56,7 @@ public class ConsultaDAO {
 	public static final String PEDIDO_ESTADO_EN_ESPERA = "enEspera";
 
 	//----------------------------------------------------
-	//Atributos
+	// Atributos TODO
 	//----------------------------------------------------
 	/**
 	 * conexion con la base de datos
@@ -80,6 +77,10 @@ public class ConsultaDAO {
 	 * URL al cual se debe conectar para acceder a la base de datos.
 	 */
 	private String cadenaConexion;
+	
+	//-------------------------------------------------
+	// Constructor TODO
+	//-------------------------------------------------
 
 	/**
 	 * constructor de la clase. No inicializa ningun atributo.
@@ -89,12 +90,12 @@ public class ConsultaDAO {
 		inicializar("");
 	}
 
-	// -------------------------------------------------
-	// Métodos
-	// -------------------------------------------------
+	//-------------------------------------------------
+	// Métodos TODO
+	//-------------------------------------------------
 
 	/**
-	 * obtiene ls datos necesarios para establecer una conexion
+	 * Obtiene ls datos necesarios para establecer una conexion
 	 * Los datos se obtienen a partir de un archivo properties.
 	 * @param path ruta donde se encuentra el archivo properties.
 	 */
@@ -175,9 +176,11 @@ public class ConsultaDAO {
 			rs.next();
 			cantidad = rs.getInt("cantidad");
 			String updateIncQuery = "update producto set cantidad=cantidad+"+cantidad+" where codigo="+codigo+" estado="+etapa+1;
+			statement.close();
 			statement = conexion.prepareStatement(updateIncQuery);
 			statement.executeUpdate();
 			String updateDecQuery = "update producto set cantidad=0 where codigo="+codigo+" estado="+etapa;
+			statement.close();
 			statement = conexion.prepareStatement(updateDecQuery);
 			statement.executeUpdate();
 			conexion.commit();
@@ -313,7 +316,7 @@ public class ConsultaDAO {
 			selectingQuery += " order by "+ordenamiento+" ";
 		}
 		try {
-			
+
 			establecerConexion(cadenaConexion, usuario, clave);
 			conexion.setAutoCommit(false);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
@@ -338,7 +341,7 @@ public class ConsultaDAO {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-			
+
 			throw new Exception("ERROR = ConsultaDAO: loadRowsBy(..) Agregando parametros y executando el statement!!!");
 		}finally 
 		{
@@ -550,7 +553,7 @@ public class ConsultaDAO {
 			establecerConexion(cadenaConexion, usuario, clave);
 			conexion.setAutoCommit(false);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-			
+
 			String selectQuery = "select codigoProducto from PEDIDO where codigo="+pedido;
 			statement = conexion.prepareStatement(selectQuery);
 			ResultSet rs = statement.executeQuery();
@@ -624,6 +627,7 @@ public class ConsultaDAO {
 				String selectQueryAdmin = "select * from administrador";
 				if(!usuarion.isEmpty()){ selectQueryAdmin+=" where login='"+usuarion+"'";}
 				else if(!correo.isEmpty()){ selectQueryAdmin+=" where direccionElectronica='"+correo+"'";}
+				statement.close();
 				statement = conexion.prepareStatement(selectQueryAdmin);
 				statement.setQueryTimeout(5);
 				ResultSet rsAdmin = statement.executeQuery();
@@ -795,7 +799,7 @@ public class ConsultaDAO {
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			//Rectifica si hay cantidad suficiente
 
-			
+
 			PreparedStatement  prcantidadDisponible = conexion.prepareStatement("SELECT cantidad from Producto where Producto.codigo="+idProducto+" for update");
 			prcantidadDisponible.setQueryTimeout(5);
 			ResultSet rscantidadDisponible = prcantidadDisponible.executeQuery();
@@ -811,10 +815,10 @@ public class ConsultaDAO {
 
 				int nuevo = cantidadDisponible-cantidad;			
 				PreparedStatement  psaactualizarDisponibles1 = conexion.prepareStatement("update Productos set cantidad="+nuevo+" where Proceso.codigoProducto="+idProducto);
-//				psaactualizarDisponibles1.setQueryTimeout(5);
+				//				psaactualizarDisponibles1.setQueryTimeout(5);
 				psaactualizarDisponibles1.executeUpdate();
 				psaactualizarDisponibles1.close();
-				
+
 
 				//Codigo del admin y crea pedido
 				pSRequeridosNum = conexion.prepareStatement("select codigo from Administrador for update");
@@ -823,7 +827,7 @@ public class ConsultaDAO {
 				int adminID =0;
 				if(admin.next())
 					adminID=admin.getInt("codigo");
-				
+
 				pSRequeridosNum =conexion.prepareStatement("insert into Pedidos (codigo, estado,cantidad,fechaPedido, fechaEsperada,  codioProducto ,  codigoAdmin, codigoCliente)"
 						+ "values (incremento_id_Pedido.NextVal,'"+PEDIDO_ESTADO_LISTO+"',"+cantidad+", NOW(),"+fechaEspera+","+idProducto+","+adminID+",'"+loginCLiente+"' )");
 				pSRequeridosNum.executeUpdate();
@@ -1263,8 +1267,8 @@ public class ConsultaDAO {
 			prepStmt = conexion.prepareStatement(selectQuery);
 			prepStmt.setQueryTimeout(5);
 			ResultSet rs = prepStmt.executeQuery();
-			
-			
+
+
 			while(rs.next()){
 				String nombre = rs.getString("nombre");
 				int codigo = rs.getInt("codigoEtapa");
@@ -1310,7 +1314,7 @@ public class ConsultaDAO {
 			conexion.setAutoCommit(false);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			prepStmt = conexion.prepareStatement(sentencia);
-//			prepStmt.setQueryTimeout(5);
+			//			prepStmt.setQueryTimeout(5);
 
 			ResultSet rsProducto = prepStmt.executeQuery();
 
@@ -1361,7 +1365,7 @@ public class ConsultaDAO {
 			conexion.setAutoCommit(false);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			prepStmt = conexion.prepareStatement(sentencia);
-//			prepStmt.setQueryTimeout(5);
+			//			prepStmt.setQueryTimeout(5);
 
 			ResultSet rsMaterial = prepStmt.executeQuery();
 
@@ -1717,6 +1721,216 @@ public class ConsultaDAO {
 		}
 		return respuesta;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<Cliente> consultarClientes() throws Exception {
+		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+
+		PreparedStatement state = null;
+		ArrayList<String> select = new ArrayList<String>();
+		select.add("*");
+
+		String selectQuery = generateQuery(select, "CLIENTE", new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			state = conexion.prepareStatement(selectQuery);
+			ResultSet rs = state.executeQuery();
+			rs.next();
+			while(!rs.isAfterLast()){
+				Cliente cliente = new Cliente();
+				cliente.setCodigo(rs.getLong("codigo"));
+				cliente.setNombreLegal(rs.getString("nombrelegal"));
+				clientes.add(cliente);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally{
+			if(state != null){
+				try {
+					state.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return clientes;
+
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<EstacionProduccion> darEstacionProduccionesConEtapas() throws Exception
+	{
+		ArrayList<EstacionProduccion> resp = new ArrayList<EstacionProduccion>();
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+
+			//Toma todas las otras estaciones de produccion con su cuenta de lista de espera respectiva
+
+			ArrayList<String> select = new ArrayList<String>();
+			ArrayList<String> group = new ArrayList<String>();
+			ArrayList<String> order = new ArrayList<String>();
+			select.add("e.CODIGO");
+			select.add("e.TIEMPO");
+			select.add("e.CAPACIDAD");
+			select.add("e.ESTADO");
+			select.add("e.CODIGOETAPA");
+			select.add("e.NOMBRE");
+			select.add("j.CUENTA");
+			String tablaOtrasEstaciones = "ESTACIONPRODUCCION e JOIN (SELECT ESTACIONPRODUCCION.CODIGO, COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA  FROM (ESTACIONPRODUCCION LEFT OUTER JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE) GROUP BY ESTACIONPRODUCCION.CODIGO  ORDER BY CUENTA DESC) j ON e.CODIGO=j.CODIGO";
+			String estacionesDeProduccionOpcionales = generateQuery(select, tablaOtrasEstaciones, new ArrayList<String>(), order, group);
+			System.out.println(estacionesDeProduccionOpcionales);
+
+			PreparedStatement statement = conexion.prepareStatement(estacionesDeProduccionOpcionales);
+			ResultSet rs = statement.executeQuery();
+
+			while(rs.next())
+			{
+				EstacionProduccion est = new EstacionProduccion();
+				est.setCodigo(rs.getLong("CODIGO"));
+				est.setTiempo(rs.getLong("TIEMPO"));
+				est.setCapacidad(rs.getLong("CAPACIDAD"));
+				est.setEstado(rs.getString("ESTADO"));
+				est.setCodigoEtapaActual(rs.getLong("CODIGOETAPA"));
+				est.setNombreEstacion(rs.getString("NOMBRE"));
+				est.setNumEtapaProduccion(rs.getLong("CUENTA"));
+
+				//Agrega el nombre de la etapa actual (si esta existe)
+
+				if((Long)est.getCodigoEtapaActual()!=null)
+				{
+					ArrayList<String> select2 = new ArrayList<String>();
+					select2.add("ETAPAPRODUCCION.NOMBRE");
+					ArrayList<String> where2 = new ArrayList<String>();
+					where2.add("ETAPAPRODUCCION.CODIGO="+est.getCodigoEtapaActual());
+					String nombreEtapaActual = this.generateQuery(select2, "ETAPAPRODUCCION", where2, new ArrayList<String>(), new ArrayList<String>());
+					PreparedStatement statement2 = conexion.prepareStatement(nombreEtapaActual);
+					ResultSet rs1 = statement2.executeQuery();
+
+					while(rs1.next())
+					{
+						est.setNombreEtapaActual(rs1.getString("NOMBRE"));
+					}
+					statement2.close();
+				}
+				else
+				{
+					est.setNombreEtapaActual("Sin asignar");
+				}
+
+				resp.add(est);
+			}
+
+			statement.close();
+			closeConnection(conexion);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			closeConnection(conexion);
+			throw new Exception("No se pudo recuperar la informacion de las Estaciones de Procuccion");
+
+		}
+
+		return resp;
+	}
+
+	
+
+	public ArrayList<Proveedor> darProveedores() throws Exception {
+		ArrayList<Proveedor> clientes = new ArrayList<Proveedor>();
+
+		PreparedStatement state = null;
+		ArrayList<String> select = new ArrayList<String>();
+		select.add("*");
+
+		String selectQuery = generateQuery(select, "CLIENTE", new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			state = conexion.prepareStatement(selectQuery);
+			ResultSet rs = state.executeQuery();
+			rs.next();
+			while(!rs.isAfterLast()){
+				Proveedor cliente = new Proveedor();
+				cliente.setCodigo(rs.getLong("codigo"));
+				cliente.setNombreLegal(rs.getString("nombrelegal"));
+				clientes.add(cliente);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally{
+			if(state != null){
+				try {
+					state.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return clientes;
+	}
+
+	public ArrayList<EstacionProduccion> darEstaciones() throws Exception {
+		ArrayList<EstacionProduccion> clientes = new ArrayList<EstacionProduccion>();
+
+		PreparedStatement state = null;
+		ArrayList<String> select = new ArrayList<String>();
+		select.add("*");
+
+		String selectQuery = generateQuery(select, "estacionproduccion", new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+		try {
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			state = conexion.prepareStatement(selectQuery);
+			ResultSet rs = state.executeQuery();
+			rs.next();
+			while(!rs.isAfterLast()){
+				EstacionProduccion cliente = new EstacionProduccion();
+				cliente.setCodigo(rs.getLong("codigo"));
+				cliente.setNombreEstacion(rs.getString("nombre"));
+				clientes.add(cliente);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally{
+			if(state != null){
+				try {
+					state.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
+		return clientes;
+	}
+	
+	//---------------------------------------------------------------
+	// Iteración 2 TODO
+	//---------------------------------------------------------------
+
+		//-----------------------------------------------------------
+		// Requerimientos funcionales de consulta TODO
+		//-----------------------------------------------------------	
+	
+		//-----------------------------------------------------------
+		// Requerimientos funcionales TODO
+		//-----------------------------------------------------------
+
 
 	//---------------------------------------------------------------
 	// Iteración 3 TODO
@@ -1764,27 +1978,25 @@ public class ConsultaDAO {
 		select.add("codproducto");
 
 		ArrayList<String> where = new ArrayList<String>();
-//		if(!cliente.isEmpty()){where.add("codigocliente="+cliente);}
-		
+
 		if(!productos.isEmpty()){where.add("codproducto="+productos);}
 		if(!materiales.isEmpty()){where.add("codigomaterial="+materiales);}
 
 		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad between "+cantidadMinima+" and "+cantidadMaxima);}
-		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}
-		else if(cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad < "+cantidadMaxima);}
+		else if(cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}
+		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad < "+cantidadMaxima);}
 
 		if(!fechaMin.isEmpty() && !fechaMax.isEmpty()){where.add("fechapedido between TO_DATE('"+fechaMin+"', 'DD-MM-YYYY') and TO_DATE('"+fechaMax+"', 'DD-MM-YYYY')");}
 		else if(!fechaMin.isEmpty() && fechaMax.isEmpty()){where.add("fechapedido > TO_DATE('"+fechaMin+"', 'DD-MM-YYYY')");}
 		else if(fechaMin.isEmpty() && !fechaMax.isEmpty()){where.add("fechapedido < TO_DATE('"+fechaMin+"', 'DD-MM-YYYY')");}
 
 		if(!costoMin.isEmpty() && !costoMax.isEmpty()){where.add("costopedido between "+costoMin+" and "+costoMax);}
-		else if(!costoMin.isEmpty() && costoMax.isEmpty()){where.add("costopedido > "+costoMin);}
-		else if(costoMin.isEmpty() && !costoMax.isEmpty()){where.add("costopedido < "+costoMax);}
+		else if(costoMin.isEmpty() && !costoMax.isEmpty()){where.add("costopedido > "+costoMin);}
+		else if(!costoMin.isEmpty() && costoMax.isEmpty()){where.add("costopedido < "+costoMax);}
 
 		ArrayList<String> order = new ArrayList<String>();
 		order.add("codigopedido");
 
-		//		String costos = "(select pedido.cantidad*producto.COSTO as costopedido from pedido inner join producto on producto.CODIGO=pedido.CODIGOPRODUCTO)";
 		String tabla = "(select pedido.cantidad*producto.COSTO as costopedido, pedido.codigo from pedido   inner join producto  on producto.CODIGO=pedido.CODIGOPRODUCTO) c inner join PEDIDO on c.codigo=PEDIDO.CODIGO inner join (select codigomaterial, nombrematerial, tipo,  codigoproducto as codproducto, nombre from (select codigomaterial, nombrematerial, tipo, codigoproducto from (select codigomaterial, codigoetapa, nombrematerial, tipo from (select codigomaterial, codigoestacion, nombre as nombrematerial, tipo from requiere  inner join material  on material.CODIGO=requiere.CODIGOMATERIAL) inner join estacionproduccion on estacionproduccion.codigo=codigoestacion) inner join ETAPAPRODUCCION on ETAPAPRODUCCION.CODIGO=codigoetapa) inner join producto on codigoproducto=producto.codigo) on PEDIDO.CODIGO=codproducto inner join cliente on cliente.CODIGO=PEDIDO.CODIGOCLIENTE";
 
 		String selectQuery = generateQuery(select, tabla, where, order, new ArrayList<String>());
@@ -1793,7 +2005,6 @@ public class ConsultaDAO {
 			establecerConexion(cadenaConexion, usuario, clave);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			statement = conexion.prepareStatement(selectQuery);
-//			statement.setQueryTimeout(5);
 			ResultSet rs = statement.executeQuery();
 
 			rs.next();
@@ -1830,7 +2041,6 @@ public class ConsultaDAO {
 				pedidos.add(vos);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		finally{
@@ -1891,8 +2101,8 @@ public class ConsultaDAO {
 		if(!producto.isEmpty()){where.add("producto='"+producto+"'");}
 
 		if(!cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad between "+cantidadMinima+" and "+cantidadMaxima);}
-		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMinima);}
-		else if(cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad < "+cantidadMaxima);}
+		else if(cantidadMinima.isEmpty() && !cantidadMaxima.isEmpty()){where.add("cantidad < "+cantidadMinima);}
+		else if(!cantidadMinima.isEmpty() && cantidadMaxima.isEmpty()){where.add("cantidad > "+cantidadMaxima);}
 
 		if(!fechaMinima.isEmpty() && !fechaMaxima.isEmpty()){where.add("fechapedido between TO_DATE('"+fechaMinima+"', 'DD-MM-YYYY') and TO_DATE('"+fechaMaxima+"', 'DD-MM-YYYY')");}
 		else if(!fechaMinima.isEmpty() && fechaMaxima.isEmpty()){where.add("fechapedido > TO_DATE('"+fechaMinima+"', 'DD-MM-YYYY')");}
@@ -1904,14 +2114,12 @@ public class ConsultaDAO {
 		String selectQuery = generateQuery(select, tabla, where, order, new ArrayList<String>());
 		try{
 			System.out.println(selectQuery);
-			
-			
+
+
 			establecerConexion(cadenaConexion, usuario, clave);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			statement = conexion.prepareStatement(selectQuery);
 			ResultSet rs = statement.executeQuery();
-			
-			
 
 			rs.next();
 			while(!rs.isAfterLast()){
@@ -1952,7 +2160,6 @@ public class ConsultaDAO {
 				clientes.add(vos);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		finally{
@@ -1981,11 +2188,11 @@ public class ConsultaDAO {
 		ArrayList<Proveedor> proveedores = new ArrayList<Proveedor>();
 		PreparedStatement statement = null;
 
-		String tabla = "(select nommaterial, tipo, MAXIMACANTIDAD, tiempoentrega, login, "
+		String tabla = "(select nommaterial, tipo, MAXIMACANTIDAD, tiempoentrega, login, codprod, "
 				+ "codprovee, codmat, tipoidlegal, identificacionlegal, nombrelegal, costo, "
 				+ "cantidadpedida, fechaesperada, fechapedido from (select material.nombre as "
 				+ "nommaterial, tipo, MAXIMACANTIDAD, tiempoentrega, login, proveedor.CODIGO as codprovee, "
-				+ "material.codigo as codmat, tipoidlegal, identificacionlegal, nombrelegal "
+				+ "material.codigo as codmat, tipoidlegal, identificacionlegal, nombrelegal, codprod "
 				+ "from material inner join suministro on suministro.CODIGOMATERIAL=material.CODIGO "
 				+ "inner join proveedor on proveedor.CODIGO=suministro.CODIGOPROVEEDOR) "
 				+ "inner join PEDIDOMATERIAL on PEDIDOMATERIAL.CODIGOPROVEEDOR=codprovee) "
@@ -2000,6 +2207,25 @@ public class ConsultaDAO {
 		select.add("*");
 
 		ArrayList<String> where = new ArrayList<String>();
+		if(!proveedor.isEmpty()){where.add("codprovee="+proveedor+"");}
+
+		if(!minCantidadEntrega.isEmpty() && !maxCantidadEntrega.isEmpty()){where.add("maximacantidad between "+minCantidadEntrega+" and "+maxCantidadEntrega);}
+		else if(minCantidadEntrega.isEmpty() && !maxCantidadEntrega.isEmpty()){where.add("maximacantidad < "+maxCantidadEntrega);}
+		else if(!minCantidadEntrega.isEmpty() && maxCantidadEntrega.isEmpty()){where.add("maximacantidad > "+minCantidadEntrega);}
+
+		if(!minTiempo.isEmpty() && !maxTiempo.isEmpty()){where.add("tiempoentrega between "+minTiempo+" and "+maxTiempo);}
+		else if(minTiempo.isEmpty() && !maxTiempo.isEmpty()){where.add("tiempoentrega < "+maxTiempo);}
+		else if(!minTiempo.isEmpty() && maxTiempo.isEmpty()){where.add("tiempoentrega > "+minTiempo);}
+
+		if(!minCantidad.isEmpty() && !maxCantidad.isEmpty()){where.add("cantidadpedida between "+minCantidad+" and "+maxCantidad);}
+		else if(minCantidad.isEmpty() && !maxCantidad.isEmpty()){where.add("cantidadpedida < "+maxCantidad);}
+		else if(!minCantidad.isEmpty() && maxCantidad.isEmpty()){where.add("cantidadpedida > "+minCantidad);}
+
+		if(!minCosto.isEmpty() && !maxCosto.isEmpty()){where.add("costo between "+minCosto+" and "+maxCosto);}
+		else if(minCosto.isEmpty() && !maxCosto.isEmpty()){where.add("costo < "+maxCosto);}
+		else if(!minCosto.isEmpty() && maxCosto.isEmpty()){where.add("costo > "+minCosto);}
+
+		if(!producto.isEmpty()){where.add("codprod="+producto);}
 
 		ArrayList<String> order = new ArrayList<String>();
 		order.add("codproveedor");
@@ -2019,7 +2245,7 @@ public class ConsultaDAO {
 				proveedores.add(vos);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		finally{
 			if(statement != null){
@@ -2034,10 +2260,39 @@ public class ConsultaDAO {
 		return proveedores;
 	}
 
-	//----------------------------------------------------------
-	// Requerimientos funcionales TODO
-	//----------------------------------------------------------
+		//----------------------------------------------------------
+		// Requerimientos funcionales TODO
+		//----------------------------------------------------------
+	
+	/**
+	 * RF13 - CANCELAR PEDIDO DE PRODUCTOS 
+	 * Cancela la operación anterior, 
+	 * teniendo en cuenta todas las restricciones de coherencia correspondientes. 
+	 * Esta operación es realizada por un usuario cliente de la empresa que realizó el pedido que se quiere cancelar.
+	 */
+	@Deprecated
+	public void cancelarPedido(){
+		//TODO
+		//FIXME
+	}
 
+	/**
+	 * RF17 - REPORTAR CAMBIO DE ESTADO DE UNA ESTACIÓN DE PRODUCCIÓN
+	 * Dada una estación de producción y el cambio de estado deseado, 
+	 * se modifica la información existente para reflejar ese cambio.
+	 * Si  la  estación  estaba  activa y  se  quiere  desactivar,  
+	 * todas  las  etapas  de  producción  que  le  estaban  
+	 * asignadas deben ser asignadas a las otras estaciones de producción de manera 
+	 * que el trabajo total quede lo más uniformemente repartido  entre  las  estaciones activas  
+	 * (esta  operación se  llama  balanceo  de  carga).  
+	 * De  la  misma  manera,  cuando  una estación de producción se activa, 
+	 * se le asignan algunas de las etapas que ya están vigentes en el sistema, 
+	 * nuevamente tratando que la distribución sea uniforme. 
+	 * Esta operación es realizada por un usuario gerente de producción de la empresa.
+	 * @param idEstacionProduccion
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean cambiarEstadoEstacionProduccion(String idEstacionProduccion) throws Exception 
 	{
 		boolean funciono = false;
@@ -2049,7 +2304,6 @@ public class ConsultaDAO {
 		select.add("CODIGOETAPA");
 		select.add("ESTADO");
 		String selectQuery = generateQuery(select, "ESTACIONPRODUCCION", where, new ArrayList<String>(), new ArrayList<String>());
-		//		selectQuery += " of CODIGO, CODIGOETAPA, ESTADO";
 		PreparedStatement statement = null;
 		EstacionProduccion estacionPrincipal = new EstacionProduccion();
 
@@ -2060,8 +2314,6 @@ public class ConsultaDAO {
 			establecerConexion(cadenaConexion, usuario, clave);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			statement = conexion.prepareStatement(selectQuery);
-			System.out.println(selectQuery);
-
 			ResultSet rs = statement.executeQuery();
 
 			if(rs.next()){
@@ -2069,9 +2321,7 @@ public class ConsultaDAO {
 				estacionPrincipal.setEstado(rs.getString("ESTADO"));
 				estacionPrincipal.setCodigoEtapaActual(rs.getLong("CODIGOETAPA"));
 			}
-			//			System.out.println("encontro la 2");
-			//Se valida el estado y dependiendo de eso se elege que accion tomar
-
+			
 			if(estacionPrincipal.getEstado().equals(EstacionProduccion.ESTADO_ACTIVO))
 			{
 				//EN caso en que este activo y se desee desactivar la estacion de produccion
@@ -2095,8 +2345,7 @@ public class ConsultaDAO {
 					ep.setCodigo(rs1.getLong("CODIGO"));
 					etapas.add(ep);
 				}
-				System.out.println(etapas.size() + " numero etapas");
-
+				
 				//Toma todas las otras estaciones de produccion que estan activas en orden 
 				//ascendente segun el numero de etapas que tengan asignaddos
 
@@ -2118,10 +2367,8 @@ public class ConsultaDAO {
 				statement = conexion.prepareStatement(estacionesDeProduccionOpcionales);
 				ResultSet rs2 = statement.executeQuery();
 				ArrayList<EstacionProduccion> estacionesOpcionalesOrdenadas = new ArrayList<EstacionProduccion>();
-				System.out.println(estacionesDeProduccionOpcionales);
 				while(rs2.next())
 				{
-					System.out.println("llego aca");
 					EstacionProduccion est = new EstacionProduccion();
 					est.setCodigo(rs2.getLong("CODIGO"));
 					est.setNumEtapaProduccion(rs2.getLong("CUENTA"));
@@ -2132,11 +2379,8 @@ public class ConsultaDAO {
 
 				if(estacionesOpcionalesOrdenadas.size()==0)
 				{
-					//					statement.close();
-					//					closeConnection(conexion);
 					return funciono;
 				}
-
 
 				//Reasigna las etapas de producción según el balanceo
 
@@ -2169,9 +2413,7 @@ public class ConsultaDAO {
 
 				}
 
-
 				//Actualiza el estado de la estacion de produccion a inactivo
-
 
 				ArrayList<String> columns = new ArrayList<String>();
 				ArrayList<String> values = new ArrayList<String>();
@@ -2314,11 +2556,8 @@ public class ConsultaDAO {
 				funciono=true;
 
 			}
-
-
 		} catch (SQLException e) {
 			e.printStackTrace();
-
 			try {
 				conexion.rollback();
 
@@ -2337,7 +2576,6 @@ public class ConsultaDAO {
 				statement.close();
 				closeConnection(conexion);		
 				System.out.println("Funciono!!!!!!");
-
 			}
 			else
 			{
@@ -2351,7 +2589,6 @@ public class ConsultaDAO {
 				}
 			}
 		}
-
 		statement.close();
 		closeConnection(conexion);
 		System.out.println("termino");
@@ -2359,224 +2596,202 @@ public class ConsultaDAO {
 
 	}
 
-	public ArrayList<EstacionProduccion> darEstacionProduccionesConEtapas() throws Exception
+	//--------------------------------------------------------------
+	// Iteración 4 TODO
+	//--------------------------------------------------------------
+
+		//----------------------------------------------------------
+		// Requeimientos Funcinoales de Consulta 8 TODO
+		//----------------------------------------------------------
+
+	/**
+	 * RFC8.CONSULTAR EJECUCIÓN DE ETAPAS DE PRODUCCIÓN 1
+	 * Mostrar las etapas de producción ejecutadas en un rango de tiempo (dado por el usuario), 
+	 * que correspondan a un criterio de bús queda asociado con la ejecución de dicha etapa 
+	 * (material, tipo de material, pedido, cantidades, ...), también dado por el usuario.
+	 * @param fechaInicio
+	 * @param fechaFin
+	 * @param idMaterial
+	 * @param tipoMaterial
+	 * @param idPedido
+	 * @param cantidades
+	 * @return
+	 * @throws Exception 
+	 */
+	public ArrayList<EtapaProduccion> consultarEjecucionEtapasProduccionV1(String fechaInicio, String fechaFin, String idMaterial, String tipoMaterial, String idPedido, String minCantidad, String maxCantidad, int pagina) throws Exception
 	{
-		ArrayList<EstacionProduccion> resp = new ArrayList<EstacionProduccion>();
+		PreparedStatement statement = null;
+		ArrayList<EtapaProduccion> resp = new ArrayList<EtapaProduccion>();
 		try {
 			establecerConexion(cadenaConexion, usuario, clave);
-			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
-			//Toma todas las otras estaciones de produccion con su cuenta de lista de espera respectiva
+			String tabla = "EtapaProduccion eta"; 
 
 			ArrayList<String> select = new ArrayList<String>();
-			//			ArrayList<String> where = new ArrayList<String>();
-			ArrayList<String> group = new ArrayList<String>();
-			ArrayList<String> order = new ArrayList<String>();
-			select.add("e.CODIGO");
-			select.add("e.TIEMPO");
-			select.add("e.CAPACIDAD");
-			select.add("e.ESTADO");
-			select.add("e.CODIGOETAPA");
-			select.add("e.NOMBRE");
-			select.add("j.CUENTA");
-//			select.add("COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA ");
-//			select.add("COUNT (*) AS CUENTA ");
-//			group.add("ESTACIONPRODUCCION.CODIGO");
-//			order.add("CUENTA DESC");
-//			String tablaOtrasEstaciones = "ESTACIONPRODUCCION JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE";
-			String tablaOtrasEstaciones = "ESTACIONPRODUCCION e JOIN (SELECT ESTACIONPRODUCCION.CODIGO, COUNT (ETAPAPRODUCCION.CODIGO) AS CUENTA  FROM (ESTACIONPRODUCCION LEFT OUTER JOIN ETAPAPRODUCCION ON ESTACIONPRODUCCION.CODIGO=ETAPAPRODUCCION.ENESPERADE) GROUP BY ESTACIONPRODUCCION.CODIGO  ORDER BY CUENTA DESC) j ON e.CODIGO=j.CODIGO";
-			String estacionesDeProduccionOpcionales = generateQuery(select, tablaOtrasEstaciones, new ArrayList<String>(), order, group);
-			System.out.println(estacionesDeProduccionOpcionales);
+			select.add("eta.*");
 
-			PreparedStatement statement = conexion.prepareStatement(estacionesDeProduccionOpcionales);
-			ResultSet rs = statement.executeQuery();
-
-			while(rs.next())
-			{
-				EstacionProduccion est = new EstacionProduccion();
-				est.setCodigo(rs.getLong("CODIGO"));
-				est.setTiempo(rs.getLong("TIEMPO"));
-				est.setCapacidad(rs.getLong("CAPACIDAD"));
-				est.setEstado(rs.getString("ESTADO"));
-				est.setCodigoEtapaActual(rs.getLong("CODIGOETAPA"));
-				est.setNombreEstacion(rs.getString("NOMBRE"));
-				est.setNumEtapaProduccion(rs.getLong("CUENTA"));
-
-				//Agrega el nombre de la etapa actual (si esta existe)
-
-				if((Long)est.getCodigoEtapaActual()!=null)
-				{
-					ArrayList<String> select2 = new ArrayList<String>();
-					select2.add("ETAPAPRODUCCION.NOMBRE");
-					ArrayList<String> where2 = new ArrayList<String>();
-					where2.add("ETAPAPRODUCCION.CODIGO="+est.getCodigoEtapaActual());
-					String nombreEtapaActual = this.generateQuery(select2, "ETAPAPRODUCCION", where2, new ArrayList<String>(), new ArrayList<String>());
-					PreparedStatement statement2 = conexion.prepareStatement(nombreEtapaActual);
-					ResultSet rs1 = statement2.executeQuery();
-
-					while(rs1.next())
-					{
-						est.setNombreEtapaActual(rs1.getString("NOMBRE"));
-					}
-					statement2.close();
-				}
-				else
-				{
-					est.setNombreEtapaActual("Sin asignar");
-				}
-
-				resp.add(est);
+			ArrayList<String> where = new ArrayList<String>();
+			if(!idMaterial.isEmpty()){
+				where.add("m.codigo="+idMaterial);
+				tabla += ", EstacionProduccion, Requiere, material";
+				where.add("EstacionProduccion.CodigoEtapa=eta.Codigo");
+				where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
+				where.add("Material.Codigo=Requiere.CodigoMaterial");
 			}
-
-			statement.close();
-			closeConnection(conexion);
-
+			if(!idPedido.isEmpty()){
+				where.add("p.codigo="+idPedido);
+				tabla += "PEDIDO, Producto";
+				tabla = "PEDIDO, Producto, "+tabla;
+				where.add("PEDIDO.CodigoProducto=Producto.Codigo");
+				where.add("Producto.Codigo= eta.CODIGOPRODUCTO ");
+			}
+			if(!minCantidad.isEmpty() && !maxCantidad.isEmpty()){where.add("eta.cantidad between "+minCantidad+" and "+maxCantidad);}
+			else if(!minCantidad.isEmpty() && maxCantidad.isEmpty()){where.add("eta.cantidad < "+maxCantidad);}
+			else if(minCantidad.isEmpty() && !maxCantidad.isEmpty()){where.add("eta.cantidad > "+minCantidad);}
 			
+			where.add("fechainicio between to_date('"+fechaInicio+"','YYYY/mm/dd') and to_date('"+fechaFin+"','YYYY/mm/dd')");
+
+			String selectingQuery = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());	
+			
+			String paginada = pagination(selectingQuery, pagina, 25);
+System.out.println(paginada);
+			statement = conexion.prepareStatement(paginada);
+			ResultSet resultados = statement.executeQuery();
+			while(resultados.next())
+			{
+				EtapaProduccion temp = new EtapaProduccion();
+				temp.setCodigo(resultados.getLong("codigo"));
+				temp.setEtapa(resultados.getInt("etapa"));
+				temp.setNombre(resultados.getString("nombre"));
+				temp.setFechaInicio(resultados.getDate("fechaInicio"));
+				temp.setFechaFin(resultados.getDate("fechaFin"));
+				temp.setTiempoEjecuacion(resultados.getLong("tiempoEjecucion"));
+				temp.setDescripcion(resultados.getString("descripcion"));
+				resp.add(temp);
+
+			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		finally{
+			if(statement != null){
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
 			closeConnection(conexion);
-			throw new Exception("No se pudo recuperar la informacion de las Estaciones de Procuccion");
-			
 		}
-
 		return resp;
-		
-		
 	}
 
-	
-	//--------------------------------------------------------------
-	// Requerimientos Funcionales Iteración 4
-	//--------------------------------------------------------------
-	
-	//RFC 8 TODO
-	
-	public ArrayList<EtapaProduccion> consultarEjecucionEtapasProduccionV1(java.util.Date fechaInicio, java.util.Date fechaFin, String idMaterial, String tipoMaterial, String idPedido, Long[] cantidades)
+	/**
+	 * RFC9. CONSULTAR EJECUCIÓN DE ETAPAS DE PRODUCCIÓN 2
+	 * Mostrar las etapas de producción ejecutadas en un rango de tiempo (dado por el usuario), 
+	 * que NO correspondan a un criterio de búsqueda asociado con la ejecución de dicha etapa
+	 * (material, tipo de material, pedido, cantidades, ...), también dado por el usuario.
+	 * @param fechaInicio
+	 * @param fechaFin
+	 * @param idMaterial
+	 * @param tipoMaterial
+	 * @param idPedido
+	 * @param cantidades
+	 * @return
+	 * @throws Exception 
+	 */
+	public ArrayList<EtapaProduccion> consultarEjecucionEtapasProduccionV2(String fechaInicio, String fechaFin, String idMaterial, String tipoMaterial, String idPedido, String minCantidad, String maxCantidad, int pagina) throws Exception
 	{
 		ArrayList<EtapaProduccion> resp = new ArrayList<EtapaProduccion>();
+		PreparedStatement statement = null;
 		try {
 			establecerConexion(cadenaConexion, usuario, clave);
-			String solicitudEtapas = generateQueryRFC8yRFC9(fechaInicio, fechaFin, idMaterial, tipoMaterial, idPedido, cantidades);
-			System.out.println(solicitudEtapas);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+
+			String tabla = "";
+
+			ArrayList<String> select = new ArrayList<String>();
+			select.add("eta.*");
+
+			ArrayList<String> where = new ArrayList<String>();
+			if(!idMaterial.isEmpty()){
+				where.add("m.codigo="+idMaterial);
+				tabla += ", EstacionProduccion, Requiere, material";
+				where.add("EstacionProduccion.CodigoEtapa=eta.Codigo");
+				where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
+				where.add("Material.Codigo=Requiere.CodigoMaterial");
+			}
+			if(!idPedido.isEmpty()){
+				where.add("p.codigo="+idPedido);
+				tabla += "PEDIDO, Producto";
+				tabla = "PEDIDO, Producto, "+tabla;
+				where.add("PEDIDO.CodigoProducto=Producto.Codigo");
+				where.add("Producto.Codigo= eta.CODIGOPRODUCTO ");
+				//				if(!minCantidad.isEmpty() && !maxCantidad.isEmpty()){where.add("cantidad between "+minCantidad+" and "+maxCantidad);}
+				//				else if(!minCantidad.isEmpty() && maxCantidad.isEmpty()){where.add("cantidad < "+maxCantidad);}
+				//				else if(minCantidad.isEmpty() && !maxCantidad.isEmpty()){where.add("cantidad > "+minCantidad);}
+			}
 			
-			PreparedStatement statement = conexion.prepareStatement(solicitudEtapas);
+			where.add("fechainicio between "+fechaInicio+" and "+fechaFin);
+
+			String selectingQuery = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
+			String negSelectingQuery = "select eta2.* from (select * from ETAPAPRODUCCION) eta2 MINUS ("+selectingQuery+")";
+
+			String paginada = pagination(negSelectingQuery, pagina, 25);
+			statement = conexion.prepareStatement(paginada);
+			System.out.println(paginada);
 			ResultSet resultados = statement.executeQuery();
 			while(resultados.next())
 			{
 				EtapaProduccion temp = new EtapaProduccion();
-				temp.setCodigo(resultados.getLong("Codigo"));
-				temp.setEtapa(resultados.getInt("Etapa"));
-				temp.setNombre(resultados.getString("Nombre"));
-				temp.setFechaInicio(resultados.getDate("FechaInicio"));
-				temp.setFechaFin(resultados.getDate("FechaFin"));
-				temp.setTiempoEjecuacion(resultados.getLong("TiempoEjecucion"));
-				temp.setDescripcion(resultados.getString("Descripcion"));
+				temp.setCodigo(resultados.getLong("codigo"));
+				temp.setEtapa(resultados.getInt("etapa"));
+				temp.setNombre(resultados.getString("nombre"));
+				temp.setFechaInicio(resultados.getDate("fechaInicio"));
+				temp.setFechaFin(resultados.getDate("fechaFin"));
+				temp.setTiempoEjecuacion(resultados.getLong("tiempoEjecucion"));
+				temp.setDescripcion(resultados.getString("descripcion"));
 				resp.add(temp);
-				
+
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		finally{
+			if(statement != null){
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
 		}
 		return resp;
 	}
-	
-	//RFC 9 TODO
-	
-	public ArrayList<EtapaProduccion> consultarEjecucionEtapasProduccionV2(java.util.Date fechaInicio, java.util.Date fechaFin, String idMaterial, String tipoMaterial, String idPedido, Long[] cantidades)
+
+	/**
+	 * RFC10. CONSULTAR PEDIDOS 2 
+	 * Mostrar todos los pedidos que usan materiales de un tipo X con costo valor mayor a Y.
+	 * Los valores de X y Y  son dados por el usuario.
+	 * @param tipoMaterial
+	 * @param costo
+	 * @return
+	 * @throws Exception 
+	 */
+	public ArrayList<Pedido> consultarPedidosV2(String tipoMaterial, String costo, int pagina) throws Exception
 	{
-		ArrayList<EtapaProduccion> resp = new ArrayList<EtapaProduccion>();
-		try {
-			establecerConexion(cadenaConexion, usuario, clave);
-			String solicitudEtapas = generateQueryRFC8yRFC9(fechaInicio, fechaFin, idMaterial, tipoMaterial, idPedido, cantidades);
-			solicitudEtapas = "select eta2.* from (select * from ETAPAPRODUCCION) eta2 MINUS ("+solicitudEtapas+")";
-			System.out.println(solicitudEtapas);
-			
-			PreparedStatement statement = conexion.prepareStatement(solicitudEtapas);
-			ResultSet resultados = statement.executeQuery();
-			while(resultados.next())
-			{
-				EtapaProduccion temp = new EtapaProduccion();
-				temp.setCodigo(resultados.getLong("Codigo"));
-				temp.setEtapa(resultados.getInt("Etapa"));
-				temp.setNombre(resultados.getString("Nombre"));
-				temp.setFechaInicio(resultados.getDate("FechaInicio"));
-				temp.setFechaFin(resultados.getDate("FechaFin"));
-				temp.setTiempoEjecuacion(resultados.getLong("TiempoEjecucion"));
-				temp.setDescripcion(resultados.getString("Descripcion"));
-				resp.add(temp);
-				
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return resp;
-	}
-	
-	private String generateQueryRFC8yRFC9(java.util.Date fechaInicio, java.util.Date fechaFin, String idMaterial, String tipoMaterial, String idPedido, Long[] cantidades)
-	{
-		ArrayList<String> select = new ArrayList<String>();
-		select.add("eta.*");
-		String tabla = " EtapaProduccion eta ";
-		ArrayList<String> where = new ArrayList<String>();
-		java.sql.Date nuevaFechaInicio = new java.sql.Date(fechaInicio.getTime());
-		java.sql.Date nuevaFechaFin = new java.sql.Date(fechaFin.getTime());
-		DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-		where.add("'"+df.format(nuevaFechaInicio)+"'<=eta.FechaInicio");
-		where.add("'"+df.format(nuevaFechaFin)+"'>=eta.FechaFin");
-		if(tipoMaterial!=null&&!tipoMaterial.isEmpty())
-		{
-			tabla += " , EstacionProduccion, Requiere, Material ";
-			where.add("EstacionProduccion.CodigoEtapa=eta.Codigo");
-			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
-			where.add("Material.Codigo=Requiere.CodigoMaterial");
-			where.add("Material.Tipo='"+tipoMaterial+"'");
-			if(idMaterial!=null&&!idMaterial.isEmpty())
-				where.add("Material.Codigo="+idMaterial);
-		}
-		else if(idMaterial!=null&&!idMaterial.isEmpty())
-		{
-			tabla += " , EstacionProduccion, Requiere ";
-			where.add("EstacionProduccion.CodigoEtapa=eta.Codigo");
-			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
-			where.add("Material.Codigo="+idMaterial);
-		}
-		
-		if(idPedido!=null&&!idPedido.isEmpty())
-		{
-			tabla = "PEDIDO, Producto, "+tabla;
-			where.add("PEDIDO.CodigoProducto=Producto.Codigo");
-			where.add("Producto.Codigo= eta.CODIGOPRODUCTO ");
-			where.add("PEDIDO.Codigo="+idPedido);
-			if(cantidades!=null&&cantidades.length>1)
-			{
-				where.add("Producto.Cantidad>="+cantidades[0]);
-				where.add("Producto.Cantidad<="+cantidades[1]);
-			}
-		}
-		else if(cantidades!=null&&cantidades.length>1)
-		{
-			tabla = "Producto, "+tabla;
-			where.add("Producto.Codigo= eta.CODIGOPRODUCTO ");
-			where.add("Producto.Cantidad>="+cantidades[0]);
-			where.add("Producto.Cantidad<="+cantidades[1]);
-		}
-		
-		return generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
-	}
-	
-	//RFC 10 TODO
-	
-	public ArrayList<Pedido> consultarPedidosV2(String tipoMaterial, long costo)
-	{
+		PreparedStatement statement = null;
 		ArrayList<Pedido> resp = new ArrayList<Pedido>();
 		try {
 			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			
 			ArrayList<String> select = new ArrayList<String>();
 			select.add("ped.*");
 			String tabla = "PEDIDO ped, Producto, EtapaProduccion, EstacionProduccion, Requiere, Material";
+			
 			ArrayList<String> where = new ArrayList<String>();
 			where.add("ped.CodigoProducto=Producto.Codigo");
 			where.add("Producto.Codigo=EtapaProduccion.CodigoProducto");
@@ -2585,50 +2800,73 @@ public class ConsultaDAO {
 			where.add("Material.Codigo=Requiere.CodigoMaterial");
 			where.add("Material.Tipo='"+tipoMaterial+"'");
 			where.add("Producto.Costo>"+costo);
-			String solicitudPedidos = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
-			System.out.println(solicitudPedidos);
 			
-			PreparedStatement statement = conexion.prepareStatement(solicitudPedidos);
+			String solicitudPedidos = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
+			
+			String paginada = pagination(solicitudPedidos, pagina, 25);
+			
+			statement = conexion.prepareStatement(paginada);
 			ResultSet resultados = statement.executeQuery();
 			while(resultados.next())
 			{
 				Pedido temp = new Pedido();
-				temp.setCodigo(resultados.getLong("Codigo"));
-				temp.setEstado(resultados.getInt("Estado"));
-				temp.setCantidad(resultados.getLong("Cantidad"));
-				temp.setFechaPedido(resultados.getDate("FechaPedido"));
-				temp.setFechaEsperada(resultados.getDate("FechaEsperada"));
-				temp.setFechaEntrega(resultados.getDate("FechaEntrega"));
+				temp.setCodigo(resultados.getLong("codigo"));
+				temp.setEstado(resultados.getInt("estado"));
+				temp.setCantidad(resultados.getLong("cantidad"));
+				temp.setFechaPedido(resultados.getDate("fechaPedido"));
+				temp.setFechaEsperada(resultados.getDate("fechaEsperada"));
+				temp.setFechaEntrega(resultados.getDate("fechaEntrega"));
 				Producto tempProd = new Producto();
-				tempProd.setCodigo(resultados.getLong("CodigoProducto"));
+				tempProd.setCodigo(resultados.getLong("codigoProducto"));
 				Administrador tempAdmin = new Administrador();
-				tempAdmin.setCodigo(resultados.getLong("CodigoEmpresa"));
+				tempAdmin.setCodigo(resultados.getLong("codigoEmpresa"));
 				Cliente tempClien = new Cliente();
-				tempClien.setCodigo(resultados.getLong("CodigoCliente"));
+				tempClien.setCodigo(resultados.getLong("codigoCliente"));
 				temp.setProducto(tempProd);
 				temp.setAdmin(tempAdmin);
 				temp.setCliente(tempClien);
 				resp.add(temp);
 			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		finally{
+			if(statement != null){
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
 		return resp;
-		
+
 	}
-	
-	//RFC 11 TODO
-	
-	public ArrayList<Pedido> consultarMaterialesV2ParaPedidos(String idMaterial)
+
+	/**
+	 * RFC11. CONSULTAR MATERIAL 2
+	 * Dado el identificador de un material, 
+	 * mostrar la información de los pedidos en los que ha estado involucrado,
+	 * incluyendo los que están en etapa de producción. 
+	 * Para los pedidos no activos actualmente debe especificarse el rango de fechas en los que estuvo activo.
+	 * @param idMaterial
+	 * @return
+	 * @throws Exception 
+	 */
+	public ArrayList<Pedido> consultarMaterialesV2ParaPedidos(String idMaterial, int pagina) throws Exception
 	{
+		PreparedStatement statement = null;
 		ArrayList<Pedido> resp = new ArrayList<Pedido>();
 		try {
 			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+			
 			ArrayList<String> select = new ArrayList<String>();
 			select.add("ped.*");
 			String tabla = "PEDIDO ped, Producto, EtapaProduccion, EstacionProduccion, Requiere";
+			
 			ArrayList<String> where = new ArrayList<String>();
 			where.add("ped.CodigoProducto=Producto.Codigo");
 			where.add("Producto.Codigo=EtapaProduccion.CodigoProducto");
@@ -2636,9 +2874,10 @@ public class ConsultaDAO {
 			where.add("EstacionProduccion.Codigo=Requiere.CodigoEstacion");
 			where.add(idMaterial+"=Requiere.CodigoMaterial");
 			String solicitudPedidos = generateQuery(select, tabla, where, new ArrayList<String>(), new ArrayList<String>());
-			System.out.println(solicitudPedidos);
 			
-			PreparedStatement statement = conexion.prepareStatement(solicitudPedidos);
+			String paginada = pagination(solicitudPedidos, pagina, 25);
+			
+			statement = conexion.prepareStatement(paginada);
 			ResultSet resultados = statement.executeQuery();
 			while(resultados.next())
 			{
@@ -2660,20 +2899,37 @@ public class ConsultaDAO {
 				temp.setCliente(tempClien);
 				resp.add(temp);
 			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		finally{
+			if(statement != null){
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					throw new Exception ("Error cerrando");
+				}
+			}
+			closeConnection(conexion);
+		}
 		return resp;
-		
+
 	}
-	
-	
+
 	//--------------------------------------------------------------
 	// Generadores TODO
 	//--------------------------------------------------------------
 
+	/**
+	 * Genera una cadena de texto que representa una sentencia SQL para seleccionar información.
+	 * @param select
+	 * @param tabla
+	 * @param where
+	 * @param order
+	 * @param group
+	 * @return
+	 */
 	private String generateQuery(ArrayList<String> select, String tabla, ArrayList<String> where, ArrayList<String> order, ArrayList<String> group){
 		String query = "SELECT ";
 		// Lista los atributos del registro que van a ser seleccionados
@@ -2698,7 +2954,7 @@ public class ConsultaDAO {
 			while(iteraWhere.hasNext()){
 				String act = iteraWhere.next();
 				if(iteraWhere.hasNext()){
-					query += act+" AND ";
+					query += act+"AND ";
 				}
 				else{
 					query += act;
@@ -2738,7 +2994,15 @@ public class ConsultaDAO {
 		return query;
 	}
 
-
+	/**
+	 * Genera una cadena de texto que representa una sentencia SQL para seleccionar información, para update.
+	 * @param select
+	 * @param tabla
+	 * @param where
+	 * @param order
+	 * @param group
+	 * @return
+	 */
 	private String generateQueryForUpdate(ArrayList<String> select, String tabla, ArrayList<String> where, ArrayList<String> order, ArrayList<String> group){
 		String query = "SELECT ";
 		// Lista los atributos del registro que van a ser seleccionados
@@ -2763,15 +3027,13 @@ public class ConsultaDAO {
 			while(iteraWhere.hasNext()){
 				String act = iteraWhere.next();
 				if(iteraWhere.hasNext()){
-					query += act+" AND ";
+					query += act+"AND ";
 				}
 				else{
 					query += act;
 				}
 			}
 		}
-
-
 
 		// Lista por que atributos se va a agrupar
 		if(!group.isEmpty()){
@@ -2806,18 +3068,22 @@ public class ConsultaDAO {
 		//Indica que es para actualizar
 
 		query += " FOR UPDATE";
-
 		return query;
 	}
 
-
+	/**
+	 * Genera una cadena de texto que representa una sentencia SQL de update
+	 * @param tabla
+	 * @param columns
+	 * @param values
+	 * @param where
+	 * @return
+	 */
 	private String generateUpdate(String tabla, ArrayList<String> columns, ArrayList<String> values , ArrayList<String> where){
 		String query = "UPDATE ";
 
 		// Indica de que tabla que se va a actualizar
 		query += tabla+" SET ";
-
-
 
 		// Lista los atributos del registro que van a ser seleccionados
 		Iterator<String> iteraColumns = columns.iterator();
@@ -2837,8 +3103,6 @@ public class ConsultaDAO {
 
 		}
 
-
-
 		// Lista las condiciones del por las que se va a actualizar
 		if(!where.isEmpty()){
 			query += " WHERE ";
@@ -2846,7 +3110,7 @@ public class ConsultaDAO {
 			while(iteraWhere.hasNext()){
 				String act = iteraWhere.next();
 				if(iteraWhere.hasNext()){
-					query += act+" AND ";
+					query += act+"AND ";
 				}
 				else{
 					query += act;
@@ -2854,17 +3118,22 @@ public class ConsultaDAO {
 			}
 		}
 
-
 		return query;
 	}
 
-
+	/**
+	 * 
+	 * @param tabla
+	 * @param columns
+	 * @param values
+	 * @return
+	 */
+	@SuppressWarnings("unused")
 	private String generateInsert(String tabla, ArrayList<String> columns, ArrayList<String> values){
 		String query = "INSERT INTO ";
 
 		// Indica de que tabla que se va a insertar
 		query += tabla+" ( ";
-
 
 		// Lista las columnas en las que se va a insertar
 		Iterator<String> iteraColumns = columns.iterator();
@@ -2891,121 +3160,15 @@ public class ConsultaDAO {
 				query += act+" ) ";
 			}
 		}
-
 		return query;
 	}
-
-	//FIXME
-	private String generateDelete(){
-		return "";
+	
+	private String pagination(String sentencia, int pagina, int cantidad){
+		return "select * from ( select  /*+FIRST_ROWS("+cantidad+") */a.*, rownum rnum from ("+sentencia+" order by codigo) a where rownum <= "+(pagina)*cantidad+") where rnum >="+(((pagina-1)*cantidad)+1);
 	}
-
-	public ArrayList<Cliente> consultarClientes() throws Exception {
-		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
-		
-		PreparedStatement state = null;
-		ArrayList<String> select = new ArrayList<String>();
-		select.add("*");
-		
-		String selectQuery = generateQuery(select, "CLIENTE", new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
-		try {
-			establecerConexion(cadenaConexion, usuario, clave);
-			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-			state = conexion.prepareStatement(selectQuery);
-			ResultSet rs = state.executeQuery();
-			rs.next();
-			while(!rs.isAfterLast()){
-				Cliente cliente = new Cliente();
-				cliente.setCodigo(rs.getLong("codigo"));
-				cliente.setNombreLegal(rs.getString("nombrelegal"));
-				clientes.add(cliente);
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		finally{
-			if(state != null){
-				try {
-					state.close();
-				} catch (SQLException e) {
-					throw new Exception ("Error cerrando");
-				}
-			}
-			closeConnection(conexion);
-		}
-		return clientes;
-		
-	}
-
-	public ArrayList<Proveedor> darProveedores() throws Exception {
-		ArrayList<Proveedor> clientes = new ArrayList<Proveedor>();
-		
-		PreparedStatement state = null;
-		ArrayList<String> select = new ArrayList<String>();
-		select.add("*");
-		
-		String selectQuery = generateQuery(select, "CLIENTE", new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
-		try {
-			establecerConexion(cadenaConexion, usuario, clave);
-			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-			state = conexion.prepareStatement(selectQuery);
-			ResultSet rs = state.executeQuery();
-			rs.next();
-			while(!rs.isAfterLast()){
-				Proveedor cliente = new Proveedor();
-				cliente.setCodigo(rs.getLong("codigo"));
-				cliente.setNombreLegal(rs.getString("nombrelegal"));
-				clientes.add(cliente);
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		finally{
-			if(state != null){
-				try {
-					state.close();
-				} catch (SQLException e) {
-					throw new Exception ("Error cerrando");
-				}
-			}
-			closeConnection(conexion);
-		}
-		return clientes;
-	}
-
-	public ArrayList<EstacionProduccion> darEstaciones() throws Exception {
-ArrayList<EstacionProduccion> clientes = new ArrayList<EstacionProduccion>();
-		
-		PreparedStatement state = null;
-		ArrayList<String> select = new ArrayList<String>();
-		select.add("*");
-		
-		String selectQuery = generateQuery(select, "estacionproduccion", new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
-		try {
-			establecerConexion(cadenaConexion, usuario, clave);
-			conexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-			state = conexion.prepareStatement(selectQuery);
-			ResultSet rs = state.executeQuery();
-			rs.next();
-			while(!rs.isAfterLast()){
-				EstacionProduccion cliente = new EstacionProduccion();
-				cliente.setCodigo(rs.getLong("codigo"));
-				cliente.setNombreEstacion(rs.getString("nombre"));
-				clientes.add(cliente);
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		finally{
-			if(state != null){
-				try {
-					state.close();
-				} catch (SQLException e) {
-					throw new Exception ("Error cerrando");
-				}
-			}
-			closeConnection(conexion);
-		}
-		return clientes;
-	}
+	
+	//---------------------------------------------------------------------
+	// Consultas auxiliares TODO
+	//---------------------------------------------------------------------
+	
 }

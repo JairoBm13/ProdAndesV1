@@ -25,6 +25,10 @@ public class EtapaProduccion {
 	
 	private ArrayList<EstacionProduccion> estacionProduccion;
 	
+	private int cantidad;
+	
+	private long enEspera;
+	
 	public EtapaProduccion()
 	{
 		etapas = new ArrayList<Etapa>();
@@ -124,6 +128,34 @@ public class EtapaProduccion {
 
 	public void setEtapasProduccion(ArrayList<EstacionProduccion> etapasProduccion) {
 		this.estacionProduccion = etapasProduccion;
+	}
+
+	/**
+	 * @return the cantidad
+	 */
+	public int getCantidad() {
+		return cantidad;
+	}
+
+	/**
+	 * @param cantidad the cantidad to set
+	 */
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	/**
+	 * @return the enEspera
+	 */
+	public long getEnEspera() {
+		return enEspera;
+	}
+
+	/**
+	 * @param enEspera the enEspera to set
+	 */
+	public void setEnEspera(long enEspera) {
+		this.enEspera = enEspera;
 	}
 	
 	

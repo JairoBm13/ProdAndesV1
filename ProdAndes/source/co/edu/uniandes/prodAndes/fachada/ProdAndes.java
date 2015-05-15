@@ -9,10 +9,9 @@ import co.edu.uniandes.prodAndes.vos.EstadoPedidoValue;
 import co.edu.uniandes.prodAndes.vos.EtapaProduccion;
 import co.edu.uniandes.prodAndes.vos.Material;
 import co.edu.uniandes.prodAndes.vos.Operario;
+import co.edu.uniandes.prodAndes.vos.Pedido;
 import co.edu.uniandes.prodAndes.vos.Producto;
 import co.edu.uniandes.prodAndes.vos.Proveedor;
-import co.edu.uniandes.prodAndes.vos.ProveedorValue;
-import co.edu.uniandes.prodAndes.vos.Usuario;
 
 /**
  * Clase VideoAndes, que representa la fachada de comunicación entre
@@ -404,5 +403,64 @@ public class ProdAndes
 
 	public ArrayList<co.edu.uniandes.prodAndes.vos.EstacionProduccion> darEstacionesConEtapa() throws Exception {
 		return dao.darEstacionProduccionesConEtapas();
+	}
+	
+	/**
+	 * 
+	 * @param fechaInicio
+	 * @param fechaFin
+	 * @param idMaterial
+	 * @param tipoMaterial
+	 * @param idPedido
+	 * @param minCantidad
+	 * @param maxCantidad
+	 * @param pagina
+	 * @return
+	 * @throws Exception 
+	 */
+	public ArrayList<EtapaProduccion> darEjecucionEtapasV1(String fechaInicio, String fechaFin, String idMaterial, String tipoMaterial, String idPedido, String minCantidad, String maxCantidad, int pagina) throws Exception{
+		
+		return dao.consultarEjecucionEtapasProduccionV1(fechaInicio, fechaFin, idMaterial, tipoMaterial, idPedido, minCantidad, maxCantidad, pagina);
+	}
+	
+	/**
+	 * 
+	 * @param fechaInicio
+	 * @param fechaFin
+	 * @param idMaterial
+	 * @param tipoMaterial
+	 * @param idPedido
+	 * @param minCantidad
+	 * @param maxCantidad
+	 * @param pagina
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<EtapaProduccion> darEjecucionEtapasV2(String fechaInicio, String fechaFin, String idMaterial, String tipoMaterial, String idPedido, String minCantidad, String maxCantidad, int pagina) throws Exception
+	{
+		return dao.consultarEjecucionEtapasProduccionV2(fechaInicio, fechaFin, idMaterial, tipoMaterial, idPedido, minCantidad, maxCantidad, pagina);
+	}
+	
+	/**
+	 * 
+	 * @param tipoMaterial
+	 * @param costo
+	 * @param pagina
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<Pedido> darPedidosV2(String tipoMaterial, String costo, int pagina) throws Exception{
+		return dao.consultarPedidosV2(tipoMaterial, costo, pagina);
+	}
+	
+	/**
+	 * 
+	 * @param idMaterial
+	 * @param pagina
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<Pedido> darMaterialesParaPedidosV2(String idMaterial, int pagina) throws Exception{
+		return dao.consultarMaterialesV2ParaPedidos(idMaterial, pagina);
 	}
 }

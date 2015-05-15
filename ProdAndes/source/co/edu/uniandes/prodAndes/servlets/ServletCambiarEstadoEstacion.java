@@ -105,7 +105,7 @@ public class ServletCambiarEstadoEstacion extends ServletTemplate{
 				respuesta.println("		<!-- End content -->");
 			}
 			else{
-				String login = request.getParameter("login");
+				String login = request.getParameter("");
 				try {
 					fachada.cambiarEstadoEstacionProduccion(login);
 					respuesta.println("<!-- Start Page Banner -->");
@@ -182,8 +182,6 @@ public class ServletCambiarEstadoEstacion extends ServletTemplate{
 					respuesta.println("		<!-- End content -->");
 
 				} catch (Exception e) {
-					//TODO
-
 					respuesta.println("<!-- Start Content -->");
 					respuesta.println("		<div id=\"content\">");
 					respuesta.println("			<div class=\"container\">");
@@ -284,7 +282,6 @@ public class ServletCambiarEstadoEstacion extends ServletTemplate{
 			}
 			tabla += "</tabla>";
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return tabla;

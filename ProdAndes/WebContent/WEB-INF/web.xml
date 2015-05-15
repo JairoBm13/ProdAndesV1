@@ -45,6 +45,22 @@
   <servlet-name>ServletCambioEstado</servlet-name>
   <servlet-class>co.edu.uniandes.prodAndes.servlets.ServletCambiarEstadoEstacion</servlet-class>
  </servlet>
+ <servlet>
+  <servlet-name>ServletEtapaV1</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ConsultarEtapas1</servlet-class>
+ </servlet>
+ <servlet>
+  <servlet-name>ServletEtapaV2</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ConsultarEtapas2</servlet-class>
+ </servlet>
+ <servlet>
+  <servlet-name>ServletMateriaPedidoV2</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ConsultarMaterialPedidoV2</servlet-class>
+ </servlet>
+ <servlet>
+  <servlet-name>ServletPedidoV2</servlet-name>
+  <servlet-class>co.edu.uniandes.prodAndes.servlets.ConsultarPedidosV2</servlet-class>
+ </servlet>
  <servlet-mapping>
   <servlet-name>ServletConsultasGenerales</servlet-name>
   <url-pattern>/consultaGeneral.html</url-pattern>
@@ -84,5 +100,21 @@
  <servlet-mapping>
   <servlet-name>ServletCambioEstado</servlet-name>
   <url-pattern>/cambiarEstadoEstacion.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletEtapaV1</servlet-name>
+  <url-pattern>/etapasV1.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletEtapaV2</servlet-name>
+  <url-pattern>/etapasV2.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletMateriaPedidoV2</servlet-name>
+  <url-pattern>/materiaPedidoV2.html</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+  <servlet-name>ServletPedidoV2</servlet-name>
+  <url-pattern>/pedidosV2.html</url-pattern>
  </servlet-mapping>
 </web-app>
