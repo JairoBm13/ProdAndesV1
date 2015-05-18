@@ -2925,7 +2925,7 @@ System.out.println(paginada);
 		// Requerimientos funcionales TODO
 		//--------------------------------------------------------------
 
-	public 
+	//public 
 	
 		//--------------------------------------------------------------
 		// Requerimientos funcionales de consulta TODO
